@@ -769,8 +769,8 @@ nav button.on i{transform:translateY(-2px)}
 
     <div class="sec-label">訓練日誌</div>
     <div id="logList"></div>
-    <button class="export-btn" id="exportBtn">匯出全部紀錄（CSV）</button>
-    <p class="hint" style="margin-top:12px">傳給 Aaron，讓階段二的課表更準。</p>
+    <button class="export-btn" id="pullBtn" style="border-color:rgba(201,162,39,.4);color:var(--gold)">↓ 從雲端更新（拉回 Sheet 的修改）</button>
+    <p class="hint" style="margin-top:12px">所有紀錄都自動同步到 Aaron 的雲端試算表。<br>Aaron 在試算表補登或修改後，按上面的按鈕拉回來。</p>
   </section>
 
   <!-- ===== PLAN ===== -->
@@ -779,7 +779,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
-  <div class="ver">Rita's Coffee · v2.6 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
+  <div class="ver">Rita's Coffee · v2.8 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
 </div>
 
 <nav>
@@ -1870,33 +1870,85 @@ function renderLogs(){
   });
 }
 
-function exportCSV(){
-  const soreTxt=Object.fromEntries(SORE_PARTS.map(s=>[s.v,s.l]));
-  const rows=[['日期','週次','星期','項目','課表內容','打卡類型','RPE','實際分鐘','完成度','痠痛部位','備註','當日體重(早)','當日卡路里']];
-  Object.keys(S.logs).sort().forEach(k=>{
-    const g=S.logs[k];
-    const wt=S.wt[k]; const wtAm = wt ? (typeof wt==='number'?wt:(wt.am??'')) : '';
-    const cal=(S.cal[k]||[]).reduce((a,b)=>a+b,0);
-    const wd=['日','一','二','三','四','五','六'][new Date(g.date+'T00:00:00').getDay()];
-    rows.push([
-      g.date, g.week, wd, g.item||'',
-      (g.plan||'').replace(/,/g,'；'),
-      g.kind==='min'?'最低標':'完整',
-      g.rpe, g.dur,
-      {full:'照課表',short:'有縮水',extra:'有加量'}[g.cmp]||g.cmp,
-      g.sore.map(s=>soreTxt[s]||s).join('；'),
-      (g.note||'').replace(/,/g,'；'),
-      wtAm, cal||''
-    ]);
+/* ===== 從雲端拉回 ===== */
+async function pullFromCloud(){
+  if(!SYNC_ON()){ toast('尚未設定雲端網址'); return; }
+  toast('從雲端讀取中…');
+  let data;
+  try{
+    const res = await fetch(SYNC_URL + '?action=pull');
+    data = await res.json();
+    if(!data.ok) throw new Error(data.error||'讀取失敗');
+  }catch(e){ toast('讀取失敗，請確認網路'); return; }
+
+  const cmpRev = {'照課表':'full','有縮水':'short','有加量':'extra'};
+  const soreRev = Object.fromEntries(SORE_PARTS.map(s=>[s.l, s.v]));
+  const norm = d => String(d||'').slice(0,10);
+
+  let nLogs=0, nDaily=0;
+
+  // 每日數據 → 體重（含卡路里補入，若本地當天沒有）
+  (data.daily||[]).forEach(r=>{
+    const d = norm(r['日期']); if(!d) return;
+    const rec = (typeof S.wt[d]==='object' && S.wt[d]) ? S.wt[d] : {};
+    const num = v => { const n=parseFloat(v); return isNaN(n)?null:n; };
+    const am=num(r['體重-早上']), pm=num(r['體重-下班']), ni=num(r['體重-睡前']);
+    if(am!==null) rec.am=am;
+    if(pm!==null) rec.pm=pm;
+    if(ni!==null) rec.night=ni;
+    if(am!==null||pm!==null||ni!==null){ S.wt[d]=rec; nDaily++; }
+    const cal=num(r['卡路里']);
+    if(cal!==null && cal>0 && !(S.cal[d]&&S.cal[d].length)) S.cal[d]=[cal];
   });
-  const csv='\ufeff'+rows.map(r=>r.join(',')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`ritas_coffee_log_${todayKey()}.csv`;
-  a.click();
-  toast('已匯出，傳給 Aaron');
+
+  // 打卡紀錄 → 日誌 + 待辦打勾
+  (data.logs||[]).forEach(r=>{
+    const d = norm(r['日期']); if(!d) return;
+    const week = parseInt(r['週次'])||0;
+    const itemName = String(r['項目']||'').trim();
+    if(!week || !itemName) return;
+
+    const kind = r['打卡類型']==='最低標' ? 'min' : 'full';
+    const soreArr = String(r['痠痛部位']||'').split(/[、;；]/).filter(Boolean)
+      .map(t=>soreRev[t.trim()]||t.trim());
+
+    // 找到或建立 log（同日期+同項目視為同一筆）
+    let key = Object.keys(S.logs).find(k=>{
+      const g=S.logs[k]; return g.date===d && (g.item===itemName);
+    });
+    if(!key){ key = S.logs[d] ? d+'#'+itemName : d; }
+    S.logs[key] = {
+      date:d, week, item:itemName, kind,
+      plan: String(r['課表內容']||itemName),
+      rpe: parseInt(r['RPE'])||null,
+      dur: parseInt(r['實際分鐘'])||null,
+      cmp: cmpRev[r['完成度']] || 'full',
+      sore: soreArr.length?soreArr:['none'],
+      note: String(r['備註']||''),
+      nth: 0
+    };
+    nLogs++;
+
+    // 待辦打勾：用項目名對回 WEEKS
+    const wk = WEEKS[week-1];
+    if(wk){
+      const it = wk.items.find(x=>x.n===itemName || String(r['課表內容']||'').startsWith(x.n));
+      if(it){
+        if(!S.items[week-1]) S.items[week-1]={};
+        if(!S.items[week-1][it.id]) S.items[week-1][it.id]={date:d, kind};
+      }
+    }
+  });
+
+  // 重算
+  S.total = Object.values(S.items).reduce((a,w)=>a+Object.keys(w).length,0);
+  recalcWeekStreak();
+  await checkBounty();
+  await save(); render();
+  toast(`已更新：${nLogs} 筆日誌、${nDaily} 天體重`);
 }
+
+
 
 /* ============ 事件 ============ */
 function switchTab(v){
@@ -1967,7 +2019,7 @@ document.getElementById('reloadBtn').onclick=async()=>{
   toast('重新載入中…');
   setTimeout(()=>{ location.reload(); }, 350);
 };
-document.getElementById('exportBtn').onclick=exportCSV;
+document.getElementById('pullBtn').onclick=pullFromCloud;
 document.getElementById('wtAdd').onclick=async()=>{
   const el=document.getElementById('wtInput');
   const slot=document.getElementById('wtSlot').value;
