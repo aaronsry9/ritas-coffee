@@ -779,7 +779,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
-  <div class="ver">Rita's Coffee · v2.8 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
+  <div class="ver">Rita's Coffee · v3.0 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
 </div>
 
 <nav>
@@ -1103,7 +1103,7 @@ function payloadLog(k){
   const soreTxt=Object.fromEntries(SORE_PARTS.map(s=>[s.v,s.l]));
   const cmpTxt={full:'照課表',short:'有縮水',extra:'有加量'};
   const wd=['日','一','二','三','四','五','六'][new Date(g.date+'T00:00:00').getDay()];
-  return {date:g.date, week:g.week, day:wd, nth:g.nth,
+  return {date:g.date, week:g.week, day:wd, nth:(g.item||''),  // 「項目」欄：傳名稱
     plan:g.plan||g.item||'', kind:g.kind==='min'?'最低標':'完整',
     rpe:g.rpe, dur:g.dur, cmp:cmpTxt[g.cmp]||g.cmp,
     sore:(g.sore||[]).map(s=>soreTxt[s]||s).join('、'), note:g.note||''};
@@ -1149,6 +1149,14 @@ async function load(){
     const v = await store.get(KEY);
     if(v) S = {...S, ...JSON.parse(v)};
   }catch(e){ /* 首次使用，用預設值 */ }
+  // 一次性清理 v2.9：移除舊 bug 產生的數字項目日誌
+  let cleaned=false;
+  Object.keys(S.logs).forEach(k=>{
+    const g=S.logs[k];
+    if(g && /^\d+$/.test(String(g.item||''))){ delete S.logs[k]; cleaned=true; }
+  });
+  if(cleaned) await save();
+
   if(!S.seeded){ await seedProgress(); }
   else render();
   if(SYNC_ON()){
@@ -1905,8 +1913,24 @@ async function pullFromCloud(){
   (data.logs||[]).forEach(r=>{
     const d = norm(r['日期']); if(!d) return;
     const week = parseInt(r['週次'])||0;
-    const itemName = String(r['項目']||'').trim();
+    let itemName = String(r['項目']||'').trim();
     if(!week || !itemName) return;
+    let needRepush = false;
+    if(/^\d+$/.test(itemName)){
+      // 舊版壞資料：用「打勾紀錄」還原這天做的是哪一項
+      const wkItems = S.items[week-1] || {};
+      const wkDef = WEEKS[week-1];
+      let recovered = null;
+      for(const id in wkItems){
+        if(wkItems[id].date === d && wkDef){
+          const def = wkDef.items.find(x=>x.id===id);
+          if(def){ recovered = def.n; break; }
+        }
+      }
+      if(!recovered) return;   // 還原不了才跳過
+      itemName = recovered;
+      needRepush = true;       // 順手把 Sheet 上那格修正
+    }
 
     const kind = r['打卡類型']==='最低標' ? 'min' : 'full';
     const soreArr = String(r['痠痛部位']||'').split(/[、;；]/).filter(Boolean)
@@ -1928,6 +1952,7 @@ async function pullFromCloud(){
       nth: 0
     };
     nLogs++;
+    if(needRepush){ const pl=payloadLog(key); if(pl) push('log', pl); }
 
     // 待辦打勾：用項目名對回 WEEKS
     const wk = WEEKS[week-1];
