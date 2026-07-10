@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Rita's Coffee · CT226</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rita's">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1A1210">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADu0lEQVR42u3dwUoXQRzAcR8hOvoMEQQFBQkGBmVUhIRUICEVFRhIRVFRUYGBHTx4yIOHDl6iY3QWPHXoAXyDHqM5RJcEd/8zOzuz+4HvcX6zrfthNdz/OjV99Ih0YFO+BIJDcAgOwSE4BIfgEByCQ3BIcAgOwSE4BIfgEByCQ3BU09ft9VAXi5MMwtFbO1troe7Wxw/C0VtfNt+HulufahaOHtreeBvqeiTJLBy5+/zpVajrkYTjcORr8+PzUJ6p+Fk4srbx4Uko52DkLBz5Wn+zGso8G3NQOPK19nIllHk25qBwZO3dswehnLMxR4Qjd68f3w1lm405HBy5e/FoOZRtNuZwcPTQ04dLoTyzMceCo59W790MdT048VHg6LmV5cVQp1OTHQKO/ru/tBDqbmqy/eEopTs3roY6GplgczjK6vb1S6Hk69tuC0eJ3bp2IZR2fds94Si0xctzoYSLW20IR9EtXJwNJVzcakM4iu7K3Ewo1crmu8FRQfOzZ0JJljXcCo5qOn/2VCjJsoZbwVFN506fCMWvab4MjjqaOXk8FL+m7Uo4BIfgkOAQHIJDY8Hxe393zMEBBxxwwNERjvF8ay/2lOFwynDAMYz/yo7KR8knC4eTheOwfn7fggOOvxSaBMe4cDRkkY3IoSfbo54R4ZiARQYizXHkJzI1kh/TImV05KP5afbiYxQ4ksjowkfb08zso3Qc+3s7A26Ci53TBxyV4cjpYyw4kvzKtBAc2XzAUSWOPD7KfUww7SUpEEf81YVj1w8cfd084KgYR9c3DzjgqBnH/LHp+H792Iovyb/kX6m+KXTno+jPrRTlo0wZcOwmvCqRLPa+bcAxWBytiPw/CMfwcRzIpckyOMaIo3lJfMABRz4cXfgo/VP2BfqIx5H2co70zjHUmwccQ8bhzgEHHHDAAccgcYz0F29D9VHLbQOOIdw24IDDY4JweMAYjiQPgI30owkD9lH+c8VwkAHHsHD4IDUcXsEAR3sWXt4Ch9c+jc9Hda/QhAMOOOCAAw444IADDjjG4KPGt/3DAQcccMABBxxwwAEHHIP3UekfJoMDDjjggAMOOOCAYxA+6v0zuXDAAQcccMABBxxwwAHHgH3UKwMOOOCAAw444IADDjjgGLCPqmXAAQcccIwTRxXBAQccfMAhwSE4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIDsEhOASH4JDgEByCQ3AIDsEhOASH4BAcEhyCQ3AIDsEhOASH4BAcgkNwSHAIDsEhONRPfwDUPDugAc9wYgAAAABJRU5ErkJggg==">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAADu0lEQVR42u3dwUoXQRzAcR8hOvoMEQQFBQkGBmVUhIRUICEVFRhIRVFRUYGBHTx4yIOHDl6iY3QWPHXoAXyDHqM5RJcEd/8zOzuz+4HvcX6zrfthNdz/OjV99Ih0YFO+BIJDcAgOwSE4BIfgEByCQ3BIcAgOwSE4BIfgEByCQ3BU09ft9VAXi5MMwtFbO1troe7Wxw/C0VtfNt+HulufahaOHtreeBvqeiTJLBy5+/zpVajrkYTjcORr8+PzUJ6p+Fk4srbx4Uko52DkLBz5Wn+zGso8G3NQOPK19nIllHk25qBwZO3dswehnLMxR4Qjd68f3w1lm405HBy5e/FoOZRtNuZwcPTQ04dLoTyzMceCo59W790MdT048VHg6LmV5cVQp1OTHQKO/ru/tBDqbmqy/eEopTs3roY6GplgczjK6vb1S6Hk69tuC0eJ3bp2IZR2fds94Si0xctzoYSLW20IR9EtXJwNJVzcakM4iu7K3Ewo1crmu8FRQfOzZ0JJljXcCo5qOn/2VCjJsoZbwVFN506fCMWvab4MjjqaOXk8FL+m7Uo4BIfgkOAQHIJDY8Hxe393zMEBBxxwwNERjvF8ay/2lOFwynDAMYz/yo7KR8knC4eTheOwfn7fggOOvxSaBMe4cDRkkY3IoSfbo54R4ZiARQYizXHkJzI1kh/TImV05KP5afbiYxQ4ksjowkfb08zso3Qc+3s7A26Ci53TBxyV4cjpYyw4kvzKtBAc2XzAUSWOPD7KfUww7SUpEEf81YVj1w8cfd084KgYR9c3DzjgqBnH/LHp+H792Iovyb/kX6m+KXTno+jPrRTlo0wZcOwmvCqRLPa+bcAxWBytiPw/CMfwcRzIpckyOMaIo3lJfMABRz4cXfgo/VP2BfqIx5H2co70zjHUmwccQ8bhzgEHHHDAAccgcYz0F29D9VHLbQOOIdw24IDDY4JweMAYjiQPgI30owkD9lH+c8VwkAHHsHD4IDUcXsEAR3sWXt4Ch9c+jc9Hda/QhAMOOOCAAw444IADDjjG4KPGt/3DAQcccMABBxxwwAEHHIP3UekfJoMDDjjggAMOOOCAYxA+6v0zuXDAAQcccMABBxxwwAHHgH3UKwMOOOCAAw444IADDjjgGLCPqmXAAQcccIwTRxXBAQccfMAhwSE4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIDsEhOASH4JDgEByCQ3AIDsEhOASH4BAcEhyCQ3AIDsEhOASH4BAcgkNwSHAIDsEhONRPfwDUPDugAc9wYgAAAABJRU5ErkJggg==">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlJpdGEncyBDb2ZmZWUiLCAic2hvcnRfbmFtZSI6ICJSaXRhJ3MiLCAic3RhcnRfdXJsIjogIi4vIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxQTEyMTAiLCAidGhlbWVfY29sb3IiOiAiIzFBMTIxMCIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUxRQUFBQzBDQUlBQUFDeXI1RmxBQUFEdTBsRVFWUjQydTNkd1VvWFFSekFjUjhoT3ZvTUVRUUZCUWtHQm1WVWhJUlVJQ0VWRlJoSVJWRlJVWUdCSFR4NHlJT0hEbDZpWTNRV1BIWG9BWHlESHFNNVJKY0VkLzh6T3p1eis0SHZjWDZ6cmZ0aE5kei9PalY5OUloMFlGTytCSUpEY0FnT3dTRTRCSWZnRUJ5Q1EzQkljQWdPd1NFNEJJZmdFQnlDUTNCVTA5ZnQ5VkFYaTVNTXd0RmJPMXRyb2U3V3h3L0MwVnRmTnQrSHVsdWZhaGFPSHRyZWVCdnFlaVRKTEJ5NSsvenBWYWpya1lUamNPUnI4K1B6VUo2cCtGazRzcmJ4NFVrbzUyRGtMQno1V24rekdzbzhHM05RT1BLMTluSWxsSGsyNXFCd1pPM2Rzd2VobkxNeFI0UWpkNjhmM3cxbG00MDVIQnk1ZS9Gb09aUnROdVp3Y1BUUTA0ZExvVHl6TWNlQ281OVc3OTBNZFQwNDhWSGc2TG1WNWNWUXAxT1RIUUtPL3J1L3RCRHFibXF5L2VFb3BUczNyb1k2R3BsZ2N6aks2dmIxUzZIazY5dHVDMGVKM2JwMklaUjJmZHM5NFNpMHhjdHpvWVNMVzIwSVI5RXRYSndOSlZ6Y2FrTTRpdTdLM0V3bzFjcm11OEZSUWZPelowSkpsalhjQ281cU9uLzJWQ2pKc29aYndWRk41MDZmQ01XdmFiNE1qanFhT1hrOEZMK203VW80QklmZ2tPQVFISUpEWThIeGUzOTN6TUVCQnh4d3dORVJqdkY4YXkvMmxPRnd5bkRBTVl6L3lvN0tSOGtuQzRlVGhlT3dmbjdmZ2dPT3Z4U2FCTWU0Y0RSa2tZM0lvU2ZibzU0UjRaaUFSUVlpelhIa0p6STFraC9USW1WMDVLUDVhZmJpWXhRNGtzam93a2ZiMDh6c28zUWMrM3M3QTI2Q2k1M1RCeHlWNGNqcFl5dzRrdnpLdEJBYzJYekFVU1dPUEQ3S2ZVd3c3U1VwRUVmODFZVmoxdzhjZmQwODRLZ1lSOWMzRHpqZ3FCbkgvTEhwK0g3OTJJb3Z5Yi9rWDZtK0tYVG5vK2pQclJUbG8wd1pjT3dtdkNxUkxQYStiY0F4V0J5dGlQdy9DTWZ3Y1J6SXBja3lPTWFJbzNsSmZNQUJSejRjWGZnby9WUDJCZnFJeDVIMmNvNzB6akhVbXdjY1E4Ymh6Z0VISEhEQUFjY2djWXowRjI5RDlWSExiUU9PSWR3MjRJRERZNEp3ZU1BWWppUVBnSTMwb3drRDlsSCtjOFZ3a0FISHNIRDRJRFVjWHNFQVIzc1dYdDRDaDljK2pjOUhkYS9RaEFNT09PQ0FBdzQ0NElBRERqakc0S1BHdC8zREFRY2NjTUFCQnh4d3dBRUhISVAzVWVrZkpvTUREampnZ0FNT09PQ0FZeEErNnYwenVYREFBUWNjY01BQkJ4eHd3QUhIZ0gzVUt3TU9PT0NBQXc0NDRJQUREampnR0xDUHFtWEFBUWNjY0l3VFJ4WEJBUWNjZk1BaHdTRTRCSWZnRUJ5Q1EzQUlEc0VoT0FTSEJJZmdFQnlDUTNBSURzRWhPQVNINEpEZ0VCeUNRM0FJRHNFaE9BU0g0QkFjRWh5Q1EzQUlEc0VoT0FTSDRCQWNna053U0hBSURzRWhPTlJQZndEVVBEdWdBYzl3WWdBQUFBQkpSVTVFcmtKZ2dnPT0iLCAic2l6ZXMiOiAiMTgweDE4MCIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSJ9XX0=">
+
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700;6..96,900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -23,6 +32,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
   background:var(--ink);
+  padding-top:env(safe-area-inset-top);
   color:var(--crema);
   font-family:'IBM Plex Sans',sans-serif;
   min-height:100vh;
@@ -432,6 +442,13 @@ h1 em{font-style:italic;font-weight:400;color:var(--light);display:block;font-si
 .sheet-title{font-family:'Bodoni Moda',serif;font-size:22px;font-weight:700}
 .sheet-step{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim);letter-spacing:.14em}
 
+.sheet-x{
+  width:32px;height:32px;border:1px solid var(--line);border-radius:2px;
+  background:transparent;color:var(--dim);font-size:14px;cursor:pointer;
+  display:grid;place-items:center;
+}
+.sheet-x:active{background:rgba(255,255,255,.05)}
+
 .lgq{display:none}
 .lgq.on{display:block;animation:fade .3s}
 .lgq-t{font-size:16px;font-weight:500;margin-bottom:16px}
@@ -753,17 +770,14 @@ nav button.on i{transform:translateY(-2px)}
   <div class="sheet-inner">
     <div class="sheet-head">
       <div class="sheet-title" id="lgTitle">今天練得如何？</div>
-      <div class="sheet-step" id="lgStep">1 / 4</div>
-    </div>
-
-    <!-- Q0 類型 -->
-    <div class="lgq on" data-q="0">
-      <p class="lgq-t">今天做到什麼程度？</p>
-      <div class="opt-list" id="kindList"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="sheet-step" id="lgStep">1 / 4</div>
+        <button class="sheet-x" id="lgClose">✕</button>
+      </div>
     </div>
 
     <!-- Q1 RPE -->
-    <div class="lgq" data-q="1">
+    <div class="lgq on" data-q="1">
       <p class="lgq-t">有多累？<span>RPE 自覺費力度</span></p>
       <div class="rpe-grid" id="rpeGrid"></div>
       <div class="rpe-lbl" id="rpeLbl">選一個數字</div>
@@ -1180,29 +1194,15 @@ let lgQ = 1;
 
 function openLog(item){
   LG = {item, kind:'full', rpe:null, dur:null, cmp:null, sore:[], note:''};
-  lgQ = 0;   // 0 = 先問完整還是最低標
+  lgQ = 1;
   buildLogUI();
   document.getElementById('lgTitle').textContent = item.n;
-  showQ(0);
+  showQ(1);
   document.getElementById('logSheet').classList.add('on');
 }
 function closeLog(){ document.getElementById('logSheet').classList.remove('on'); }
 
 function buildLogUI(){
-  // 類型
-  const kl=document.getElementById('kindList'); kl.innerHTML='';
-  [{v:'full',l:'完整做完',d:'照這一項的內容練'},
-   {v:'min', l:'只做了 10 分鐘',d:'也算數，一樣勾起來'}].forEach(o=>{
-    const b=document.createElement('button'); b.className='opt-b';
-    b.innerHTML=`<b>${o.l}</b><span>${o.d}</span>`;
-    b.onclick=()=>{
-      LG.kind=o.v;
-      document.querySelectorAll('#kindList .opt-b').forEach(x=>x.classList.remove('sel'));
-      b.classList.add('sel'); checkNext();
-    };
-    kl.appendChild(b);
-  });
-
   // RPE
   const rg=document.getElementById('rpeGrid'); rg.innerHTML='';
   RPE_SCALE.forEach(r=>{
@@ -1218,9 +1218,9 @@ function buildLogUI(){
   });
   document.getElementById('rpeLbl').textContent='選一個數字';
 
-  // 時長快選（依今天課表估）
+  // 時長快選（含最低標的短時）
   const dq=document.getElementById('durQuick'); dq.innerHTML='';
-  const presets = LG.kind==='min' ? [10,15,20,30] : [30,45,60,90];
+  const presets = [10, 30, 45, 60];
   presets.forEach(m=>{
     const b=document.createElement('button'); b.className='dur-b'; b.textContent=m+' 分';
     b.onclick=()=>{
@@ -1279,40 +1279,28 @@ function buildLogUI(){
 function showQ(n){
   lgQ=n;
   document.querySelectorAll('.lgq').forEach(q=>q.classList.toggle('on', +q.dataset.q===n));
-  document.getElementById('lgStep').textContent=`${n+1} / 5`;
-  document.getElementById('lgBack').style.visibility = n===0?'hidden':'visible';
+  document.getElementById('lgStep').textContent=`${n} / 4`;
+  document.getElementById('lgBack').style.visibility = n===1?'hidden':'visible';
   document.getElementById('lgNext').textContent = n===4?'完成打卡':'下一步';
   checkNext();
 }
 function checkNext(){
-  const ok = lgQ===0 ? !!LG.kind
-           : lgQ===1 ? LG.rpe!==null
+  const ok = lgQ===1 ? LG.rpe!==null
            : lgQ===2 ? LG.dur!==null && LG.dur>0
            : lgQ===3 ? LG.cmp!==null
            : LG.sore.length>0;
   document.getElementById('lgNext').disabled = !ok;
 }
 
-document.getElementById('lgBack').onclick=()=>{ if(lgQ>0) showQ(lgQ-1); };
+document.getElementById('lgBack').onclick=()=>{ if(lgQ>1) showQ(lgQ-1); };
 document.getElementById('lgNext').onclick=async()=>{
-  if(lgQ===0){ buildDurPresets(); showQ(1); return; }
   if(lgQ<4){ showQ(lgQ+1); return; }
   LG.note = document.getElementById('noteInput').value.trim();
+  LG.kind = (LG.dur && LG.dur<=15) ? 'min' : 'full';  // 15分以下自動視為最低標
   closeLog();
   await checkIn({...LG});
 };
-// 依 kind 重建時長快選
-function buildDurPresets(){
-  const dq=document.getElementById('durQuick'); dq.innerHTML='';
-  const presets = LG.kind==='min' ? [10,15,20,30] : [30,45,60,90];
-  presets.forEach(m=>{
-    const b=document.createElement('button'); b.className='dur-b'; b.textContent=m+' 分';
-    b.onclick=()=>{ LG.dur=m;
-      document.querySelectorAll('.dur-b').forEach(x=>x.classList.remove('sel'));
-      b.classList.add('sel'); document.getElementById('durInput').value=''; checkNext(); };
-    dq.appendChild(b);
-  });
-}
+document.getElementById('lgClose').onclick=closeLog;
 
 /* ============ 打卡 ============ */
 async function checkIn(log){
