@@ -47,19 +47,19 @@ body::before{
 .wrap{max-width:520px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
 
 /* header */
-header{padding:28px 0 18px;text-align:center}
+header{padding:40px 0 24px;text-align:center}
 .eyebrow{
   font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.28em;
-  text-transform:uppercase;color:var(--dim);margin-bottom:10px;
+  text-transform:uppercase;color:var(--dim);margin-bottom:16px;
 }
 h1{
   font-family:'Bodoni Moda',serif;font-weight:900;font-size:38px;line-height:.95;
   letter-spacing:-.01em;
 }
-h1 em{font-style:italic;font-weight:400;color:var(--light);display:block;font-size:.82em;margin-top:2px;letter-spacing:.02em}
+h1 em{font-style:italic;font-weight:400;color:var(--light);display:block;font-size:.82em;margin-top:6px;letter-spacing:.02em;transform:translateX(-0.06em)}
 .date{
   font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);
-  margin-top:10px;letter-spacing:.1em;
+  margin-top:14px;letter-spacing:.1em;
 }
 
 .ver{
@@ -546,7 +546,8 @@ nav{
   position:fixed;bottom:0;left:0;right:0;z-index:20;
   background:rgba(26,18,16,.94);backdrop-filter:blur(14px);
   border-top:1px solid var(--line);
-  display:flex;padding:9px 0 max(9px,env(safe-area-inset-bottom));
+  display:flex;
+  padding:9px max(10px,env(safe-area-inset-right)) max(9px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
 }
 nav button{
   flex:1;background:none;border:none;color:var(--dim);cursor:pointer;
@@ -778,7 +779,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
-  <div class="ver">Rita's Coffee · v2.3 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
+  <div class="ver">Rita's Coffee · v2.4 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
 </div>
 
 <nav>
