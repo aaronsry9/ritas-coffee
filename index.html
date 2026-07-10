@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rita's Coffee · CT226</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700;6..96,900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1210;
+  --crema:#E8D9C0;
+  --paper:#F5EFE4;
+  --green:#8A9A5B;
+  --light:#C08552;
+  --medium:#8C5A32;
+  --dark:#4A2C1A;
+  --italian:#241410;
+  --ember:#D8572A;
+  --gold:#C9A227;
+  --line:rgba(232,217,192,.16);
+  --dim:rgba(232,217,192,.55);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--ink);
+  color:var(--crema);
+  font-family:'IBM Plex Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  padding-bottom:90px;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.05;
+  background-image:radial-gradient(circle at 20% 30%,#fff 0,transparent 1px),radial-gradient(circle at 70% 60%,#fff 0,transparent 1px),radial-gradient(circle at 40% 80%,#fff 0,transparent 1px);
+  background-size:60px 60px,90px 90px,70px 70px;
+}
+.wrap{max-width:520px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* header */
+header{padding:28px 0 18px;text-align:center}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:10px;
+}
+h1{
+  font-family:'Bodoni Moda',serif;font-weight:900;font-size:38px;line-height:.95;
+  letter-spacing:-.01em;
+}
+h1 em{font-style:italic;font-weight:400;color:var(--light);display:block;font-size:.82em;margin-top:2px;letter-spacing:.02em}
+.date{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);
+  margin-top:10px;letter-spacing:.1em;
+}
+
+/* sync badge */
+.sync-badge{
+  display:none;margin-left:8px;padding:2px 6px;border-radius:2px;
+  font-size:8.5px;letter-spacing:.1em;vertical-align:middle;
+}
+.sync-badge.ok{display:inline-block;background:rgba(138,154,91,.2);color:var(--green)}
+.sync-badge.wait{display:inline-block;background:rgba(201,162,39,.2);color:var(--gold)}
+
+/* countdown */
+.countdown{
+  margin-top:20px;padding:16px 18px 14px;
+  border:1px solid var(--line);border-radius:2px;
+  background:linear-gradient(180deg,rgba(216,87,42,.06),transparent);
+}
+.cd-num{
+  font-family:'Bodoni Moda',serif;font-weight:900;font-size:46px;line-height:1;
+  color:var(--crema);letter-spacing:-.02em;
+}
+.cd-label{
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);margin-top:7px;
+}
+.cd-bar{
+  height:3px;border-radius:2px;background:rgba(232,217,192,.1);
+  margin-top:14px;overflow:hidden;
+}
+.cd-bar i{
+  display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--green),var(--light),var(--medium),var(--ember));
+  transition:width 1.2s cubic-bezier(.22,1,.36,1);
+}
+.cd-foot{
+  display:flex;justify-content:space-between;margin-top:8px;
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--dim);letter-spacing:.1em;
+}
+
+/* roast gauge — the signature */
+.roaster{
+  margin:22px 0 8px;padding:26px 20px 20px;border:1px solid var(--line);
+  border-radius:2px;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent);
+  position:relative;overflow:hidden;
+}
+.roaster::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,var(--green),var(--light),var(--medium),var(--dark),var(--italian));
+  opacity:.35;
+}
+.bean-wrap{display:flex;justify-content:center;margin-bottom:16px}
+.bean{
+  width:104px;height:104px;position:relative;
+  transition:filter .9s cubic-bezier(.22,1,.36,1);
+}
+.bean svg{width:100%;height:100%;overflow:visible}
+.bean .body{transition:fill 1.1s cubic-bezier(.22,1,.36,1)}
+.bean .crack{stroke:rgba(0,0,0,.42);stroke-width:2.4;fill:none;stroke-linecap:round}
+.steam{position:absolute;top:-20px;left:50%;transform:translateX(-50%);display:flex;gap:9px;opacity:0;transition:opacity .8s}
+.steam.on{opacity:.65}
+.steam i{
+  display:block;width:2px;height:20px;border-radius:2px;
+  background:linear-gradient(180deg,transparent,var(--crema));
+  animation:rise 2.6s ease-in-out infinite;
+}
+.steam i:nth-child(2){animation-delay:.5s;height:26px}
+.steam i:nth-child(3){animation-delay:1s}
+@keyframes rise{0%{opacity:0;transform:translateY(6px) scaleY(.5)}40%{opacity:.9}100%{opacity:0;transform:translateY(-14px) scaleY(1.1)}}
+
+.roast-name{
+  text-align:center;font-family:'Bodoni Moda',serif;font-size:26px;font-weight:700;
+  letter-spacing:.02em;margin-bottom:4px;
+}
+.roast-sub{
+  text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  color:var(--dim);letter-spacing:.16em;text-transform:uppercase;margin-bottom:18px;
+}
+.streak-num{
+  font-family:'Bodoni Moda',serif;font-size:52px;font-weight:900;line-height:1;
+  text-align:center;color:var(--crema);
+}
+.streak-num small{font-size:14px;font-family:'IBM Plex Sans';font-weight:400;color:var(--dim);letter-spacing:.1em;display:block;margin-top:6px}
+
+/* scale */
+.scale{display:flex;gap:3px;margin-top:20px}
+.tick{flex:1;height:3px;border-radius:2px;background:rgba(232,217,192,.12);transition:background .6s,transform .4s}
+.tick.lit{background:var(--gold);transform:scaleY(1.8)}
+
+/* quote */
+.quote{
+  margin:20px 0;padding:20px 22px;border-left:2px solid var(--ember);
+  background:rgba(216,87,42,.05);
+}
+.quote p{
+  font-family:'Bodoni Moda',serif;font-size:19px;line-height:1.4;font-style:italic;
+}
+.quote span{
+  display:block;margin-top:10px;font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;
+}
+
+/* phase notice */
+.notice{
+  display:none;margin:18px 0;padding:16px 18px;
+  border:1px solid rgba(216,87,42,.45);border-radius:2px;
+  background:rgba(216,87,42,.08);
+}
+.notice.on{display:block}
+.notice b{display:block;font-family:'Bodoni Moda',serif;font-size:18px;margin-bottom:6px}
+.notice p{font-size:12.5px;line-height:1.6;color:var(--dim)}
+
+/* section */
+.sec-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--dim);margin:30px 0 12px;
+  display:flex;align-items:center;gap:12px;
+}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* today card */
+.today{border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.today-head{
+  padding:16px 18px;background:rgba(255,255,255,.03);
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.today-day{font-family:'Bodoni Moda',serif;font-size:22px;font-weight:700}
+.today-week{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.12em}
+.today-body{padding:18px}
+.drill{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.drill:last-child{border-bottom:none}
+.drill-ico{
+  width:26px;height:26px;flex-shrink:0;border-radius:50%;
+  border:1px solid var(--line);display:grid;place-items:center;
+  font-size:12px;
+}
+.drill-txt strong{display:block;font-size:14.5px;font-weight:500;margin-bottom:2px}
+.drill-txt span{font-size:12.5px;color:var(--dim);line-height:1.45}
+.rest{text-align:center;padding:22px 0;color:var(--dim);font-family:'Bodoni Moda',serif;font-style:italic;font-size:17px}
+
+/* week checklist */
+.wk-item{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-bottom:1px solid var(--line);cursor:pointer;transition:background .2s;
+}
+.wk-item:last-child{border-bottom:none}
+.wk-item:active{background:rgba(255,255,255,.03)}
+.wk-box{
+  width:24px;height:24px;flex-shrink:0;border:1.5px solid var(--line);border-radius:3px;
+  display:grid;place-items:center;font-size:13px;transition:all .25s;
+}
+.wk-item.done .wk-box{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.wk-txt{flex:1;min-width:0}
+.wk-txt strong{display:block;font-size:14.5px;font-weight:500;margin-bottom:2px}
+.wk-txt span{font-size:12px;color:var(--dim);line-height:1.45;display:block}
+.wk-item.done .wk-txt strong{color:var(--dim);text-decoration:line-through;text-decoration-thickness:1px}
+.wk-item.done .wk-txt span{opacity:.5}
+.wk-ico{font-size:14px;color:var(--dim);flex-shrink:0;width:18px;text-align:center}
+.wk-when{
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--gold);
+  flex-shrink:0;letter-spacing:.06em;
+}
+.wk-full{
+  padding:18px;text-align:center;color:var(--green);
+  font-family:'Bodoni Moda',serif;font-style:italic;font-size:16px;
+  border-top:1px solid var(--line);
+}
+
+/* check-in */
+.checkin{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.btn{
+  width:100%;padding:16px;border:none;border-radius:2px;cursor:pointer;
+  font-family:'IBM Plex Sans';font-size:14.5px;font-weight:600;letter-spacing:.02em;
+  transition:transform .12s,opacity .2s;
+}
+.btn:active{transform:scale(.985)}
+.btn-full{background:var(--ember);color:#fff}
+.btn-min{background:transparent;color:var(--crema);border:1px solid var(--line)}
+.btn-done{background:rgba(138,154,91,.15);color:var(--green);border:1px solid rgba(138,154,91,.35);cursor:default}
+.hint{font-size:11.5px;color:var(--dim);text-align:center;line-height:1.5;margin-top:2px}
+
+/* calories */
+.cal-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.cal-num{font-family:'Bodoni Moda',serif;font-size:36px;font-weight:900}
+.cal-num s{text-decoration:none;font-size:15px;color:var(--dim);font-weight:400}
+.cal-goal{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim);letter-spacing:.1em}
+.cup{
+  height:8px;border-radius:4px;background:rgba(232,217,192,.1);overflow:hidden;margin-bottom:14px;
+}
+.cup i{display:block;height:100%;background:linear-gradient(90deg,var(--medium),var(--light));transition:width .7s cubic-bezier(.22,1,.36,1)}
+.cal-in{display:flex;gap:8px}
+.cal-in input{
+  flex:1;padding:13px 14px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  border-radius:2px;color:var(--crema);font-family:'IBM Plex Mono',monospace;font-size:14px;
+}
+.cal-in input:focus{outline:none;border-color:var(--light)}
+.cal-in button{
+  padding:0 20px;background:var(--crema);color:var(--ink);border:none;border-radius:2px;
+  font-weight:600;font-size:13.5px;cursor:pointer;font-family:'IBM Plex Sans';
+}
+.cal-log{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 9px;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:2px;color:var(--dim);
+}
+
+/* beans */
+.beans-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px}
+.bcell{
+  aspect-ratio:1;border-radius:2px;border:1px solid var(--line);
+  display:grid;place-items:center;font-size:13px;
+  background:rgba(255,255,255,.02);
+}
+.bcell.got{background:rgba(201,162,39,.14);border-color:rgba(201,162,39,.4)}
+.bcell.today{border-color:var(--ember);border-width:1.5px}
+
+/* shield */
+.shield{
+  margin-top:12px;padding:14px 16px;border:1px dashed var(--line);border-radius:2px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.shield p{font-size:12.5px;color:var(--dim);line-height:1.5}
+.shield strong{color:var(--crema);font-weight:500}
+.shield-n{
+  font-family:'Bodoni Moda',serif;font-size:26px;font-weight:900;color:var(--gold);flex-shrink:0;
+}
+
+/* milestones */
+.ms{display:flex;flex-direction:column;gap:1px;background:var(--line)}
+.ms-row{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--ink);
+}
+.ms-row.hit{background:rgba(201,162,39,.06)}
+.ms-dot{
+  width:9px;height:9px;border-radius:50%;background:rgba(232,217,192,.18);flex-shrink:0;
+}
+.ms-row.hit .ms-dot{background:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.14)}
+.ms-txt{flex:1}
+.ms-txt strong{display:block;font-size:14px;font-weight:500}
+.ms-txt span{font-size:11.5px;color:var(--dim)}
+.ms-n{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim)}
+
+/* week progress */
+.wk-prog{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.wk-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.wk-cnt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:.08em}
+.wk-cnt b{font-family:'Bodoni Moda',serif;font-size:22px;color:var(--crema);font-weight:900}
+.wk-msg{font-size:11.5px;color:var(--dim)}
+.wk-bar{height:6px;border-radius:3px;background:rgba(232,217,192,.1);overflow:hidden}
+.wk-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--ember));transition:width .8s cubic-bezier(.22,1,.36,1)}
+
+/* warn */
+.warn{
+  margin-top:12px;padding:12px 14px;border-left:2px solid var(--gold);
+  background:rgba(201,162,39,.07);font-size:12px;line-height:1.6;color:var(--crema);display:none;
+}
+.warn.on{display:block}
+
+/* sparkline */
+.spark{display:flex;align-items:flex-end;gap:3px;height:44px;margin-top:14px}
+.spark i{flex:1;background:var(--light);border-radius:1px;opacity:.55;min-height:2px;transition:height .5s}
+.spark i.last{opacity:1;background:var(--ember)}
+
+/* weight log */
+.wt-log{display:flex;flex-direction:column;gap:1px;background:var(--line)}
+.wt-row{display:flex;justify-content:space-between;padding:11px 14px;background:var(--ink);font-size:13px}
+.wt-row span{font-family:'IBM Plex Mono',monospace;color:var(--dim);font-size:11.5px}
+.wt-row b{font-weight:500}
+.wt-empty{padding:20px;text-align:center;color:var(--dim);font-size:12.5px;background:var(--ink)}
+
+/* cup stage */
+.cup-stage{position:relative;display:flex;justify-content:center;margin-bottom:18px}
+.cupsvg{width:150px;height:160px;overflow:visible}
+.cupsvg rect,.cupsvg g{transition:y 1s cubic-bezier(.22,1,.36,1),opacity .8s}
+.cup-stage .steam{top:-6px}
+
+/* steps */
+.steps{display:flex;gap:5px;margin-top:16px}
+.step{
+  flex:1;text-align:center;padding:8px 2px 7px;border:1px solid var(--line);border-radius:2px;
+  background:rgba(255,255,255,.02);transition:all .5s;
+}
+.step.on{background:rgba(201,162,39,.13);border-color:rgba(201,162,39,.45)}
+.step b{display:block;font-size:11px;font-weight:500;color:var(--dim);letter-spacing:.02em}
+.step.on b{color:var(--crema)}
+.step i{display:block;font-style:normal;font-size:13px;margin-bottom:3px;opacity:.3}
+.step.on i{opacity:1}
+
+/* sell */
+#sellBox{margin-top:16px}
+.sell-btn{
+  width:100%;padding:17px;border:none;border-radius:2px;cursor:pointer;
+  background:linear-gradient(90deg,var(--gold),var(--ember));color:#1A1210;
+  font-family:'IBM Plex Sans';font-size:15px;font-weight:600;letter-spacing:.02em;
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}
+.sell-btn:active{transform:scale(.985)}
+.sold{
+  padding:15px;border:1px solid rgba(201,162,39,.4);border-radius:2px;
+  background:rgba(201,162,39,.08);text-align:center;
+}
+.sold b{font-family:'Bodoni Moda',serif;font-size:19px;display:block;margin-bottom:3px}
+.sold span{font-size:11.5px;color:var(--dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.08em}
+
+/* urgent */
+.urgent{
+  display:none;margin-top:14px;padding:12px 14px;border-radius:2px;
+  font-size:12.5px;line-height:1.55;text-align:center;
+}
+.urgent.on{display:block}
+.urgent.warn{background:rgba(216,87,42,.1);border:1px solid rgba(216,87,42,.35);color:var(--crema)}
+.urgent.close{background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.45);color:var(--crema)}
+.urgent b{font-weight:600}
+
+/* ledger */
+.ledger{margin-top:16px;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.lg-row{display:flex;align-items:center;padding:16px 8px}
+.lg-item{flex:1;text-align:center}
+.lg-item span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin-bottom:5px}
+.lg-item b{font-family:'Bodoni Moda',serif;font-size:27px;font-weight:900}
+.lg-item small{font-size:10px;color:var(--dim);margin-left:2px}
+.lg-div{width:1px;height:30px;background:var(--line)}
+.lg-foot{
+  padding:10px;text-align:center;background:rgba(255,255,255,.03);
+  border-top:1px solid var(--line);font-size:11px;color:var(--dim);
+}
+.lg-foot b{color:var(--gold);font-family:'IBM Plex Mono',monospace}
+
+/* menu collection */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mcard{
+  border:1px solid var(--line);border-radius:2px;padding:14px 12px;
+  background:rgba(255,255,255,.02);position:relative;overflow:hidden;
+}
+.mcard.owned{background:rgba(201,162,39,.06);border-color:rgba(201,162,39,.3)}
+.mcard.legend{border-color:rgba(201,162,39,.55)}
+.mcard b{display:block;font-family:'Bodoni Moda',serif;font-size:17px;margin-bottom:4px}
+.mcard .rare{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+.mcard .pz{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);margin-top:8px}
+.mcard .cnt{position:absolute;top:10px;right:11px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim)}
+.mcard.locked{opacity:.42}
+
+/* bounty */
+.bt-row{display:flex;align-items:center;gap:13px;padding:13px 15px;background:var(--ink)}
+.bt-row.got{background:rgba(201,162,39,.06)}
+.bt-amt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold)}
+
+/* weight slots */
+.wt-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:4px}
+.wslot{
+  border:1px solid var(--line);border-radius:2px;padding:11px 8px;text-align:center;
+  background:rgba(255,255,255,.02);
+}
+.wslot.has{background:rgba(201,162,39,.08);border-color:rgba(201,162,39,.32)}
+.wslot span{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;
+  color:var(--dim);text-transform:uppercase;margin-bottom:6px;
+}
+.wslot b{font-family:'Bodoni Moda',serif;font-size:19px;font-weight:700}
+.wslot b.empty{color:var(--dim);opacity:.4;font-weight:400}
+.cal-in select{
+  padding:13px 10px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  border-radius:2px;color:var(--crema);font-family:'IBM Plex Sans';font-size:13px;
+}
+.cal-in select:focus{outline:none;border-color:var(--light)}
+
+/* log sheet */
+.sheet{
+  position:fixed;inset:0;z-index:80;background:rgba(10,7,6,.86);
+  backdrop-filter:blur(6px);display:none;align-items:flex-end;
+}
+.sheet.on{display:flex}
+.sheet-inner{
+  width:100%;max-width:520px;margin:0 auto;background:var(--ink);
+  border-top:1px solid var(--line);border-radius:6px 6px 0 0;
+  padding:22px 20px max(20px,env(safe-area-inset-bottom));
+  animation:up .32s cubic-bezier(.22,1,.36,1);max-height:88vh;overflow-y:auto;
+}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:22px}
+.sheet-title{font-family:'Bodoni Moda',serif;font-size:22px;font-weight:700}
+.sheet-step{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim);letter-spacing:.14em}
+
+.lgq{display:none}
+.lgq.on{display:block;animation:fade .3s}
+.lgq-t{font-size:16px;font-weight:500;margin-bottom:16px}
+.lgq-t span{display:block;font-size:11.5px;color:var(--dim);font-weight:400;margin-top:3px}
+
+/* rpe */
+.rpe-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.rpe-b{
+  aspect-ratio:1;border:1px solid var(--line);border-radius:2px;background:rgba(255,255,255,.02);
+  color:var(--crema);font-family:'Bodoni Moda',serif;font-size:19px;font-weight:700;cursor:pointer;
+  transition:all .18s;
+}
+.rpe-b.sel{background:var(--ember);border-color:var(--ember);color:#fff;transform:scale(1.04)}
+.rpe-lbl{
+  text-align:center;margin-top:14px;font-size:13px;color:var(--dim);min-height:19px;
+  font-family:'Bodoni Moda',serif;font-style:italic;
+}
+
+/* duration */
+.dur-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.dur-b{
+  padding:14px 4px;border:1px solid var(--line);border-radius:2px;background:rgba(255,255,255,.02);
+  color:var(--crema);font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer;transition:all .18s;
+}
+.dur-b.sel{background:var(--ember);border-color:var(--ember);color:#fff}
+#durInput,#noteInput{
+  width:100%;padding:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);
+  border-radius:2px;color:var(--crema);font-size:14px;font-family:'IBM Plex Sans';
+}
+#durInput:focus,#noteInput:focus{outline:none;border-color:var(--light)}
+#noteInput{margin-top:12px}
+
+/* options */
+.opt-list{display:flex;flex-direction:column;gap:8px}
+.opt-b{
+  padding:16px;border:1px solid var(--line);border-radius:2px;background:rgba(255,255,255,.02);
+  color:var(--crema);text-align:left;cursor:pointer;transition:all .18s;
+}
+.opt-b.sel{background:rgba(216,87,42,.14);border-color:var(--ember)}
+.opt-b b{display:block;font-size:14.5px;font-weight:500;margin-bottom:2px}
+.opt-b span{font-size:12px;color:var(--dim)}
+
+/* sore */
+.sore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.sore-b{
+  padding:13px 4px;border:1px solid var(--line);border-radius:2px;background:rgba(255,255,255,.02);
+  color:var(--crema);font-size:12.5px;cursor:pointer;transition:all .18s;
+}
+.sore-b.sel{background:rgba(216,87,42,.16);border-color:var(--ember)}
+.sore-b.none.sel{background:rgba(138,154,91,.18);border-color:var(--green);color:var(--green)}
+
+.sheet-foot{display:flex;gap:9px;margin-top:24px}
+.sf-back,.sf-next{
+  padding:16px;border:none;border-radius:2px;cursor:pointer;font-size:14.5px;font-weight:600;
+  font-family:'IBM Plex Sans';transition:opacity .2s;
+}
+.sf-back{flex:0 0 96px;background:transparent;border:1px solid var(--line);color:var(--dim)}
+.sf-next{flex:1;background:var(--ember);color:#fff}
+.sf-next:disabled{opacity:.32;cursor:not-allowed}
+
+/* log history */
+.lg-card{
+  border:1px solid var(--line);border-radius:2px;padding:14px 15px;margin-bottom:8px;
+  background:rgba(255,255,255,.02);
+}
+.lg-card-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.lg-card-h b{font-size:13.5px;font-weight:500}
+.lg-card-h span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim)}
+.lg-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--dim)}
+.lg-meta i{font-style:normal}
+.lg-rpe{
+  display:inline-block;min-width:22px;text-align:center;padding:1px 6px;border-radius:2px;
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;
+}
+.lg-note{margin-top:8px;font-size:12px;color:var(--crema);opacity:.75;font-style:italic}
+.export-btn{
+  width:100%;padding:15px;margin-top:6px;background:transparent;border:1px solid var(--line);
+  border-radius:2px;color:var(--crema);font-size:13.5px;cursor:pointer;font-family:'IBM Plex Sans';
+}
+
+/* nav */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:rgba(26,18,16,.94);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);
+  display:flex;padding:9px 0 max(9px,env(safe-area-inset-bottom));
+}
+nav button{
+  flex:1;background:none;border:none;color:var(--dim);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+}
+nav button.on{color:var(--crema)}
+nav button i{font-size:17px;font-style:normal;transition:transform .2s}
+nav button.on i{transform:translateY(-2px)}
+
+.view{display:none;animation:fade .4s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* toast */
+#toast{
+  position:fixed;left:50%;bottom:104px;transform:translate(-50%,20px);
+  background:var(--crema);color:var(--ink);padding:13px 22px;border-radius:2px;
+  font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;z-index:60;max-width:88vw;text-align:center;
+  font-family:'IBM Plex Sans';
+}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Est. 2026 · Challenge Taiwan 226 <span class="sync-badge" id="syncBadge"></span></div>
+    <h1>Rita's<em>Coffee</em></h1>
+    <div class="date" id="dateline"></div>
+    <div class="countdown">
+      <div class="cd-num" id="cdDays">—</div>
+      <div class="cd-label">天後 · Challenge Taiwan 226</div>
+      <div class="cd-bar"><i id="cdFill"></i></div>
+      <div class="cd-foot"><span id="cdPct">0%</span><span>2027.04.23</span></div>
+    </div>
+  </header>
+
+  <!-- ===== TODAY ===== -->
+  <section class="view on" id="v-today">
+
+    <div class="roaster">
+      <div class="cup-stage">
+        <div class="steam" id="steam"><i></i><i></i><i></i></div>
+        <svg class="cupsvg" viewBox="0 0 140 150">
+          <!-- 杯身 -->
+          <path d="M28 40 L34 122 Q35 134 47 134 L93 134 Q105 134 106 122 L112 40 Z"
+                fill="rgba(255,255,255,.04)" stroke="var(--crema)" stroke-width="1.6" opacity=".5"/>
+          <!-- 把手 -->
+          <path d="M112 56 Q130 58 129 76 Q128 94 110 94" fill="none" stroke="var(--crema)" stroke-width="1.6" opacity=".5"/>
+          <!-- 液體遮罩 -->
+          <clipPath id="cupClip">
+            <path d="M29 41 L35 121 Q36 133 47 133 L93 133 Q104 133 105 121 L111 41 Z"/>
+          </clipPath>
+          <g clip-path="url(#cupClip)">
+            <rect id="lqCoffee" x="20" y="150" width="100" height="120" fill="#2E1A10"/>
+            <rect id="lqMilk"   x="20" y="150" width="100" height="120" fill="#D9C3A5"/>
+          </g>
+          <!-- 拉花 -->
+          <g id="art" opacity="0">
+            <ellipse cx="70" cy="62" rx="17" ry="9" fill="#4A2C1A" opacity=".55"/>
+            <path d="M70 53 Q62 62 70 71 Q78 62 70 53" fill="#F5EFE4" opacity=".9"/>
+            <path d="M70 71 L70 76" stroke="#F5EFE4" stroke-width="1.6" opacity=".9" stroke-linecap="round"/>
+          </g>
+          <!-- 豆子（第1步） -->
+          <g id="rawBeans" opacity="0">
+            <ellipse cx="60" cy="120" rx="6" ry="8" fill="#8A9A5B" transform="rotate(-20 60 120)"/>
+            <ellipse cx="74" cy="124" rx="6" ry="8" fill="#8C5A32" transform="rotate(15 74 124)"/>
+            <ellipse cx="86" cy="119" rx="6" ry="8" fill="#8A9A5B" transform="rotate(-8 86 119)"/>
+          </g>
+          <!-- 粉（第2步） -->
+          <rect id="grounds" x="34" y="118" width="72" height="15" rx="2" fill="#5C3A22" opacity="0"/>
+        </svg>
+      </div>
+
+      <div class="roast-name" id="roastName">空杯</div>
+      <div class="roast-sub" id="roastSub">Empty · 還沒開始</div>
+
+      <div class="steps" id="steps"></div>
+
+      <div class="wk-prog">
+        <div class="wk-top">
+          <span class="wk-cnt"><b id="wkDone">0</b> / <span id="wkGoal">5</span> 次</span>
+          <span class="wk-msg" id="wkMsg"></span>
+        </div>
+        <div class="wk-bar"><i id="wkFill"></i></div>
+      </div>
+
+      <div class="urgent" id="urgent"></div>
+      <div id="sellBox"></div>
+    </div>
+
+    <div class="notice" id="phaseNotice"></div>
+
+    <div class="sec-label">本週待辦 · 挑 5 項完成</div>
+    <div class="today">
+      <div class="today-head">
+        <div class="today-day" id="tDay"></div>
+        <div class="today-week" id="tWeek"></div>
+      </div>
+      <div class="today-body" id="tBody"></div>
+    </div>
+    <p class="hint">哪一天做哪一項，你自己排。<br>應酬、太累就跳過，這週還有其他天。</p>
+
+    <div class="ledger">
+      <div class="lg-row">
+        <div class="lg-item"><span>Aaron 養你基金</span><b id="wallet">0</b><small>元</small></div>
+        <div class="lg-div"></div>
+        <div class="lg-item"><span>連續達標</span><b id="streakN">0</b><small>週</small></div>
+        <div class="lg-div"></div>
+        <div class="lg-item"><span>加成</span><b id="bonusN">0</b><small>%</small></div>
+      </div>
+      <div class="lg-foot">比賽日由 Aaron 一次結清 · 預估可達 <b id="projN">0</b> 元</div>
+    </div>
+
+    <div class="quote">
+      <p id="quoteTxt"></p>
+      <span id="quoteBy">今日的一句</span>
+    </div>
+
+    <div class="shield">
+      <div>
+        <p><strong>免死金牌</strong>：每達成一週目標補 1 張（最多 2 張）。<br>某週沒達標時自動用掉，保住連續紀錄與加成。</p>
+      </div>
+      <div class="shield-n" id="shieldN">1</div>
+    </div>
+  </section>
+
+  <!-- ===== CALORIES ===== -->
+  <section class="view" id="v-cal">
+    <div class="sec-label">今日能量</div>
+    <div class="cal-top">
+      <div class="cal-num"><span id="calNow">0</span><s> / <span id="calGoal">2000</span> kcal</s></div>
+      <div class="cal-goal" id="calLeft"></div>
+    </div>
+    <div class="cup"><i id="cupFill" style="width:0%"></i></div>
+    <div class="cal-in">
+      <input type="number" id="calInput" inputmode="numeric" placeholder="輸入卡路里">
+      <button id="calAdd">加入</button>
+    </div>
+    <div class="cal-log" id="calLog"></div>
+
+    <div class="sec-label">設定每日目標</div>
+    <div class="cal-in">
+      <input type="number" id="goalInput" inputmode="numeric" placeholder="每日目標 kcal（建議 1750）">
+      <button id="goalSet">儲存</button>
+    </div>
+    <p class="hint" style="margin-top:14px">訓練日身體需要燃料。<br>吃太少練不動，長跑日與減量週務必吃回來。</p>
+    <div class="warn" id="calWarn"></div>
+
+    <div class="sec-label">今日體重 · 三時段</div>
+    <div class="cal-top">
+      <div class="cal-num"><span id="wtNow">—</span><s> kg</s></div>
+      <div class="cal-goal" id="wtDelta"></div>
+    </div>
+
+    <div class="wt-slots" id="wtSlots"></div>
+
+    <div class="cal-in" style="margin-top:12px">
+      <select id="wtSlot">
+        <option value="am">早上（空腹）</option>
+        <option value="pm">下班回家</option>
+        <option value="night">睡前</option>
+      </select>
+      <input type="number" step="0.1" id="wtInput" inputmode="decimal" placeholder="kg">
+      <button id="wtAdd">記錄</button>
+    </div>
+
+    <div class="spark" id="wtSpark"></div>
+    <p class="hint" style="margin-top:12px">趨勢圖用每天<b>早上空腹</b>那筆（最準）。<br>一天內浮動 1-2kg 很正常，是水分不是脂肪。</p>
+    </section>
+
+  <!-- ===== BEANS ===== -->
+  <section class="view" id="v-beans">
+    <div class="sec-label">咖啡店菜單 · 收藏冊</div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <p class="hint" style="margin-top:14px">每週達標做出一杯，賣掉入帳。<br>做越多次，品項越稀有、賣越貴。</p>
+
+    <div class="sec-label">本週製作進度</div>
+    <div class="beans-grid" id="beansGrid"></div>
+    <p class="hint" style="margin-top:12px">每次訓練得到一個製作零件。</p>
+
+    <div class="sec-label">開店以來</div>
+    <div class="cal-top">
+      <div class="cal-num"><span id="totalBeans">0</span><s> / 41 杯已煮成</s></div>
+      <div class="cal-goal" id="totalDays"></div>
+    </div>
+    <div class="cup" style="margin-bottom:10px"><i id="cupsFill" style="width:0%"></i></div>
+    <p class="hint" style="text-align:left;margin-bottom:4px" id="cupsNote"></p>
+
+    <div class="sec-label">里程碑獎金</div>
+    <div class="ms" id="bountyList"></div>
+
+  </section>
+
+  <!-- ===== HISTORY ===== -->
+  <section class="view" id="v-log">
+    <div class="sec-label">每週紀錄</div>
+    <div class="ms" id="histList"></div>
+    <p class="hint" style="margin-top:14px">綠色 = 該週達標（5 次以上）。<br>只看每週有沒有規律，不追究哪一天。</p>
+
+    <div class="sec-label">體重趨勢</div>
+    <div class="wt-log" id="wtLog"></div>
+
+    <div class="sec-label">訓練日誌</div>
+    <div id="logList"></div>
+    <button class="export-btn" id="exportBtn">匯出全部紀錄（CSV）</button>
+    <p class="hint" style="margin-top:12px">傳給 Aaron，讓階段二的課表更準。</p>
+  </section>
+
+  <!-- ===== PLAN ===== -->
+  <section class="view" id="v-plan">
+    <div class="sec-label">13 週地圖 · 階段一</div>
+    <div class="ms" id="planList"></div>
+    <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
+  </section>
+</div>
+
+<nav>
+  <button class="on" data-v="today"><i>◉</i>今天</button>
+  <button data-v="cal"><i>◐</i>能量</button>
+  <button data-v="beans"><i>❋</i>收藏</button>
+  <button data-v="log"><i>≡</i>紀錄</button>
+  <button data-v="plan"><i>▤</i>地圖</button>
+</nav>
+
+<!-- 訓練日誌表單 -->
+<div id="logSheet" class="sheet">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <div class="sheet-title" id="lgTitle">今天練得如何？</div>
+      <div class="sheet-step" id="lgStep">1 / 4</div>
+    </div>
+
+    <!-- Q0 類型 -->
+    <div class="lgq on" data-q="0">
+      <p class="lgq-t">今天做到什麼程度？</p>
+      <div class="opt-list" id="kindList"></div>
+    </div>
+
+    <!-- Q1 RPE -->
+    <div class="lgq" data-q="1">
+      <p class="lgq-t">有多累？<span>RPE 自覺費力度</span></p>
+      <div class="rpe-grid" id="rpeGrid"></div>
+      <div class="rpe-lbl" id="rpeLbl">選一個數字</div>
+    </div>
+
+    <!-- Q2 時長 -->
+    <div class="lgq" data-q="2">
+      <p class="lgq-t">練了多久？<span>分鐘</span></p>
+      <div class="dur-quick" id="durQuick"></div>
+      <input type="number" id="durInput" inputmode="numeric" placeholder="或自己輸入分鐘">
+    </div>
+
+    <!-- Q3 完成度 -->
+    <div class="lgq" data-q="3">
+      <p class="lgq-t">跟課表比呢？</p>
+      <div class="opt-list" id="cmpList"></div>
+    </div>
+
+    <!-- Q4 痠痛 -->
+    <div class="lgq" data-q="4">
+      <p class="lgq-t">哪裡不舒服？<span>可複選，沒有就選「都不痛」</span></p>
+      <div class="sore-grid" id="soreGrid"></div>
+      <input type="text" id="noteInput" placeholder="想補充什麼？（選填）" maxlength="60">
+    </div>
+
+    <div class="sheet-foot">
+      <button class="sf-back" id="lgBack">上一步</button>
+      <button class="sf-next" id="lgNext">下一步</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============ 資料 ============ */
+const START = new Date(2026,5,23); // 2026/06/23
+const RACE  = new Date(2027,3,23); // 2027/04/23 Challenge Taiwan 226
+
+const ROASTS = [
+  {min:0, name:'生豆',   sub:'Green · 從這裡開始',       color:'#8A9A5B'},
+  {min:2, name:'淺焙',   sub:'Light · 香氣正在打開',     color:'#C08552'},
+  {min:4, name:'中焙',   sub:'Medium · 風味穩定下來',    color:'#8C5A32'},
+  {min:8, name:'深焙',   sub:'Dark · 厚實而有重量',      color:'#4A2C1A'},
+  {min:16,name:'義式',   sub:'Italian · 一杯無可取代',   color:'#241410'},
+];
+
+const QUOTES = [
+  '沒有人是為了今天早上這一杯才學會烘豆的。你只是每天都出現。',
+  '一杯好咖啡沒有捷徑。它只要求你，在對的時間，做那件對的事。',
+  '豆子不會因為你昨天沒烘就恨你。它只等你今天回來。',
+  '慢一點沒關係。焦掉才是真的回不去。',
+  '你不需要今天很強。你只需要今天有出現。',
+  '水溫、時間、耐心——三件事，沒有一件靠意志力。',
+  '最好的那一杯，永遠是你堅持到第 30 天以後才喝到的。',
+  '十分鐘也是一次烘焙。別讓完美主義把整鍋豆子倒掉。',
+  '疲憊的時候，先聞香氣，再想距離。',
+  '今天的苦，是明天回甘的來源。',
+  '別急著喝。讓它靜置一下，風味才會出來。',
+  '你已經走過最難的部分了——那就是開始。',
+  '連續，是這場比賽唯一的技術。',
+  '沙發很舒服，但它不會記得你。跑道會。',
+];
+
+// 課表：階段一逐週。type: swim/bike/run/gym/rest
+const WEEKS = [
+  {w:1, label:'第 1 週 · 上手', hrs:'約 6 hr', note:'起步週，六項挑五項完成',
+    items:[
+      {id:'w1i0', t:'gym', n:'肌力 A', d:'下肢+後鏈+核心 45min'},
+      {id:'w1i1', t:'bike', n:'飛輪', d:'Z2 穩定 30min'},
+      {id:'w1i2', t:'run', n:'輕鬆跑', d:'Z2 25min'},
+      {id:'w1i3', t:'gym', n:'肌力 B', d:'上肢+穩定+抗旋 45min'},
+      {id:'w1i4', t:'brick', n:'長課 A', d:'游泳 800-1000m + 飛輪 40min'},
+      {id:'w1i5', t:'brick', n:'長課 B', d:'游泳 400m + 跑步 30min'},
+    ]},
+  {w:2, label:'第 2 週 · 上手', hrs:'約 6.5 hr', note:'維持骨架，跑游各加一點',
+    items:[
+      {id:'w2i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w2i1', t:'bike', n:'飛輪', d:'Z2 35min'},
+      {id:'w2i2', t:'run', n:'輕鬆跑', d:'Z2 30min'},
+      {id:'w2i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w2i4', t:'brick', n:'長課 A', d:'游泳 1000-1200m + 飛輪 45min'},
+      {id:'w2i5', t:'brick', n:'長課 B', d:'游泳 500m + 跑步 35min'},
+    ]},
+  {w:3, label:'第 3 週 · 上手', hrs:'約 7 hr', note:'本區塊最大量週',
+    items:[
+      {id:'w3i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w3i1', t:'bike', n:'飛輪', d:'Z2 40min + 短衝刺 3×20秒'},
+      {id:'w3i2', t:'run', n:'輕鬆跑', d:'Z2 35min'},
+      {id:'w3i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w3i4', t:'brick', n:'長課 A', d:'游泳 1200-1500m + 飛輪 50min'},
+      {id:'w3i5', t:'brick', n:'長課 B', d:'游泳 600m + 跑步 40min'},
+    ]},
+  {w:4, label:'第 4 週 · 減量', hrs:'約 4 hr', note:'減量週。打 6 折，讓身體吸收',
+    items:[
+      {id:'w4i0', t:'gym', n:'肌力 A', d:'組數減為 2 組'},
+      {id:'w4i1', t:'bike', n:'飛輪', d:'Z2 25min'},
+      {id:'w4i2', t:'run', n:'輕鬆跑', d:'Z2 20min'},
+      {id:'w4i3', t:'gym', n:'肌力 B', d:'組數減為 2 組'},
+      {id:'w4i4', t:'brick', n:'長課 A', d:'游泳 800m + 飛輪 30min'},
+      {id:'w4i5', t:'brick', n:'長課 B', d:'游泳 400m + 跑步 25min'},
+    ]},
+  {w:5, label:'第 5 週 · 加量', hrs:'約 7 hr', note:'回到正常量',
+    items:[
+      {id:'w5i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w5i1', t:'bike', n:'飛輪', d:'Z2 40min + (1min Z3+2min Z2)×4'},
+      {id:'w5i2', t:'run', n:'輕鬆跑', d:'Z2 40min'},
+      {id:'w5i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w5i4', t:'brick', n:'長課 A', d:'游泳 1500m + 飛輪 55min'},
+      {id:'w5i5', t:'brick', n:'長課 B', d:'游泳 700m + 跑步 45min'},
+    ]},
+  {w:6, label:'第 6 週 · 加量', hrs:'約 7.5 hr', note:'跑步長課破 50 分',
+    items:[
+      {id:'w6i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w6i1', t:'bike', n:'飛輪', d:'區間 (2min Z3+2min Z2)×5'},
+      {id:'w6i2', t:'run', n:'輕鬆跑', d:'Z2 40min'},
+      {id:'w6i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w6i4', t:'brick', n:'長課 A', d:'游泳 1600-1800m + 飛輪 60min'},
+      {id:'w6i5', t:'brick', n:'長課 B', d:'游泳 800m + 跑步 50min'},
+    ]},
+  {w:7, label:'第 7 週 · 加量', hrs:'約 8 hr', note:'最大量週',
+    items:[
+      {id:'w7i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w7i1', t:'bike', n:'飛輪', d:'區間 (3min Z3+2min Z2)×4'},
+      {id:'w7i2', t:'run', n:'輕鬆跑', d:'Z2 45min'},
+      {id:'w7i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w7i4', t:'brick', n:'長課 A', d:'游泳 1800-2000m + 飛輪 65min'},
+      {id:'w7i5', t:'brick', n:'長課 B', d:'游泳 900m + 跑步 55-60min'},
+    ]},
+  {w:8, label:'第 8 週 · 減量', hrs:'約 4.5 hr', note:'第二次減量。回血、別硬撐',
+    items:[
+      {id:'w8i0', t:'gym', n:'肌力 A', d:'組數減為 2 組'},
+      {id:'w8i1', t:'bike', n:'飛輪', d:'Z2 30min'},
+      {id:'w8i2', t:'run', n:'輕鬆跑', d:'Z2 25min'},
+      {id:'w8i3', t:'gym', n:'肌力 B', d:'組數減為 2 組'},
+      {id:'w8i4', t:'brick', n:'長課 A', d:'游泳 1000m + 飛輪 35min'},
+      {id:'w8i5', t:'brick', n:'長課 B', d:'游泳 500m + 跑步 30min'},
+    ]},
+  {w:9, label:'第 9 週 · 鞏固', hrs:'約 8 hr', note:'首次 brick：飛輪後接跑',
+    items:[
+      {id:'w9i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w9i1', t:'bike', n:'飛輪', d:'區間 (3min Z3+2min Z2)×5'},
+      {id:'w9i2', t:'run', n:'輕鬆跑', d:'Z2 45min'},
+      {id:'w9i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w9i4', t:'brick', n:'長課 A', d:'游泳 2000m + 飛輪 70min + 接跑 10min'},
+      {id:'w9i5', t:'brick', n:'長課 B', d:'游泳 1000m + 跑步 60min'},
+    ]},
+  {w:10, label:'第 10 週 · 鞏固', hrs:'約 8 hr', note:'長跑往 65 分推進',
+    items:[
+      {id:'w10i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w10i1', t:'bike', n:'飛輪', d:'區間 (4min Z3+2min Z2)×4'},
+      {id:'w10i2', t:'run', n:'輕鬆跑', d:'Z2 50min'},
+      {id:'w10i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w10i4', t:'brick', n:'長課 A', d:'游泳 2000-2200m + 飛輪 75min + 接跑 12min'},
+      {id:'w10i5', t:'brick', n:'長課 B', d:'游泳 1000m + 跑步 65min'},
+    ]},
+  {w:11, label:'第 11 週 · 鞏固', hrs:'約 8.5 hr', note:'本階段最大量週',
+    items:[
+      {id:'w11i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w11i1', t:'bike', n:'飛輪', d:'區間 (4min Z3+2min Z2)×5'},
+      {id:'w11i2', t:'run', n:'輕鬆跑', d:'Z2 50min'},
+      {id:'w11i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w11i4', t:'brick', n:'長課 A', d:'游泳 2200-2500m + 飛輪 80min + 接跑 15min'},
+      {id:'w11i5', t:'brick', n:'長課 B', d:'游泳 1200m + 跑步 70min'},
+    ]},
+  {w:12, label:'第 12 週 · 減量', hrs:'約 5 hr', note:'最後一次減量',
+    items:[
+      {id:'w12i0', t:'gym', n:'肌力 A', d:'組數減為 2 組'},
+      {id:'w12i1', t:'bike', n:'飛輪', d:'Z2 35min'},
+      {id:'w12i2', t:'run', n:'輕鬆跑', d:'Z2 30min'},
+      {id:'w12i3', t:'gym', n:'肌力 B', d:'組數減為 2 組'},
+      {id:'w12i4', t:'brick', n:'長課 A', d:'游泳 1200m + 飛輪 40min + 接跑 10min'},
+      {id:'w12i5', t:'brick', n:'長課 B', d:'游泳 600m + 跑步 35min'},
+    ]},
+  {w:13, label:'第 13 週 · 收尾', hrs:'約 6.5 hr', note:'收尾 + 檢核，計時記錄基準',
+    items:[
+      {id:'w13i0', t:'gym', n:'肌力 A', d:'45min'},
+      {id:'w13i1', t:'bike', n:'飛輪', d:'Z2 40min'},
+      {id:'w13i2', t:'run', n:'輕鬆跑', d:'Z2 40min'},
+      {id:'w13i3', t:'gym', n:'肌力 B', d:'45min'},
+      {id:'w13i4', t:'brick', n:'長課 A', d:'游泳 1500m（計時）+ 飛輪 50min + 接跑 15min'},
+      {id:'w13i5', t:'brick', n:'長課 B', d:'游泳 800m + 跑步 50min（計時）'},
+    ]},
+];
+
+
+
+const WEEK_GOAL = 5;   // 每週完成 5 次算過關
+const CAL_FLOOR = 1500; // 低於此警示
+
+/* ===== 咖啡店經濟系統 ===== */
+// 製作五步驟（對應每週 5 次訓練）
+const STEPS = [
+  {n:'選豆', d:'挑出今天的豆子'},
+  {n:'磨豆', d:'研磨到剛好的粗細'},
+  {n:'萃取', d:'熱水穿過粉層'},
+  {n:'蒸奶', d:'打出綿密奶泡'},
+  {n:'拉花', d:'最後一筆，完成'},
+];
+
+// 品項：依當週完成次數
+const MENU = {
+  5: {id:'americano', n:'美式咖啡',  price:60,  rare:'普通', color:'#4A2C1A'},
+  6: {id:'latte',     n:'拿鐵',      price:90,  rare:'稀有', color:'#C08552'},
+  7: {id:'pourover',  n:'精品手沖',  price:130, rare:'傳說', color:'#C9A227'},
+};
+// 減量週特殊款
+const DELOAD_WEEKS = [4,8,12];
+const SEASONAL = {id:'seasonal', n:'季節限定', price:110, rare:'限定', color:'#8A9A5B'};
+
+// 連續達標加成
+function bonusRate(streak){
+  if(streak>=8) return 0.4;
+  if(streak>=4) return 0.2;
+  return 0;
+}
+
+// 里程碑獎金
+const BOUNTY = [
+  {n:2,  amt:100,  t:'開店第一杯'},
+  {n:4,  amt:200,  t:'熟客上門'},
+  {n:8,  amt:300,  t:'口碑傳開'},
+  {n:13, amt:500,  t:'階段一完成'},
+  {n:22, amt:600,  t:'名店之路'},
+  {n:41, amt:1500, t:'比賽日 · 開店大獎'},
+];
+
+const ICONS = {swim:'≈',bike:'◎',run:'▷',gym:'▮',rest:'○',brick:'❋'};
+
+/* ===== 訓練日誌 ===== */
+const RPE_SCALE = [
+  {v:1, l:'幾乎沒感覺'}, {v:2, l:'非常輕鬆'}, {v:3, l:'輕鬆'},
+  {v:4, l:'有點喘但能聊天'}, {v:5, l:'中等'}, {v:6, l:'開始吃力'},
+  {v:7, l:'喘，只能說幾個字'}, {v:8, l:'很喘，撐著'},
+  {v:9, l:'快不行了'}, {v:10,l:'拼盡全力'},
+];
+const COMPLETION = [
+  {v:'full',  l:'照課表做完',  d:'計畫多少做多少'},
+  {v:'short', l:'有縮水',      d:'時間或強度打折'},
+  {v:'extra', l:'有加量',      d:'做得比課表多'},
+];
+const SORE_PARTS = [
+  {v:'none',      l:'都不痛'},
+  {v:'knee',      l:'膝蓋'},
+  {v:'lowback',   l:'下背'},
+  {v:'calf',      l:'小腿'},
+  {v:'hamstring', l:'大腿後側'},
+  {v:'quad',      l:'大腿前側'},
+  {v:'hip',       l:'髖 / 臀'},
+  {v:'shoulder',  l:'肩膀'},
+  {v:'ankle',     l:'腳踝'},
+  {v:'foot',      l:'足底'},
+];
+
+/* ============ 雲端同步設定 ============ */
+// ⬇⬇⬇ 把這裡換成你的 Apps Script 部署網址 ⬇⬇⬇
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbz6PeKimqb99pg0I5GyGthorLu7zxswS-oIzsLGORhDUvvZMGMNT1eSQLKMHLWG4FO8/exec';
+// ⬆⬆⬆ 例如 https://script.google.com/macros/s/AKfyc.../exec ⬆⬆⬆
+
+const SYNC_ON = () => SYNC_URL && !SYNC_URL.startsWith('PASTE_');
+
+// 背景送出，不阻塞畫面。失敗就放進待送佇列，下次再試。
+async function push(type, payload){
+  if(!SYNC_ON()) return;
+  try{
+    await fetch(SYNC_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({type, payload})
+    });
+    setSyncBadge('ok');
+  }catch(e){
+    S.pending = S.pending || [];
+    S.pending.push({type, payload});
+    setSyncBadge('wait');
+    try{ await window.storage.set(KEY, JSON.stringify(S)); }catch(_){}
+  }
+}
+
+// 重送待送佇列
+async function flushPending(){
+  if(!SYNC_ON() || !S.pending || !S.pending.length) return;
+  const q=[...S.pending]; S.pending=[];
+  for(const item of q){ await push(item.type, item.payload); }
+  await save();
+}
+
+function setSyncBadge(state){
+  const el=document.getElementById('syncBadge'); if(!el) return;
+  el.className='sync-badge '+state;
+  el.textContent = state==='ok' ? '已同步' : state==='wait' ? '待同步' : '';
+}
+
+// 組出要送的資料
+function payloadLog(k){
+  const g=S.logs[k]; if(!g) return null;
+  const soreTxt=Object.fromEntries(SORE_PARTS.map(s=>[s.v,s.l]));
+  const cmpTxt={full:'照課表',short:'有縮水',extra:'有加量'};
+  const wd=['日','一','二','三','四','五','六'][new Date(g.date+'T00:00:00').getDay()];
+  return {date:g.date, week:g.week, day:wd, nth:g.nth,
+    plan:g.plan||g.item||'', kind:g.kind==='min'?'最低標':'完整',
+    rpe:g.rpe, dur:g.dur, cmp:cmpTxt[g.cmp]||g.cmp,
+    sore:(g.sore||[]).map(s=>soreTxt[s]||s).join('、'), note:g.note||''};
+}
+function payloadCup(wi){
+  const c=S.cups[wi]; if(!c) return null;
+  const m=new Date(START); m.setDate(m.getDate()+wi*7);
+  const e=new Date(m); e.setDate(e.getDate()+6);
+  return {week:wi+1, period:`${iso(m)} ~ ${iso(e)}`, done:c.done,
+    name:c.n, rare:c.rare, price:c.price,
+    bonus:Math.round(bonusRate(S.wstreak)*100)+'%', wallet:S.wallet};
+}
+function payloadDaily(k){
+  const w=S.wt[k]; const cal=(S.cal[k]||[]).reduce((a,b)=>a+b,0);
+  if(!w && !cal) return null;
+  const am = w ? (typeof w==='number'? w : w.am) : '';
+  return {date:k, wtAm:am||'', wtPm:(w&&w.pm)||'', wtNight:(w&&w.night)||'',
+    cal:cal||'', goal:S.goal};
+}
+
+/* ============ 狀態 ============ */
+const KEY = 'ct226coffee';
+let S = {wstreak:0, wbest:0, total:0, shields:1, days:{}, goal:1750, cal:{}, wt:{}, cups:{}, wallet:0, claimed:[], logs:{}, seeded:false, pending:[], items:{}};
+
+async function load(){
+  try{
+    const r = await window.storage.get(KEY);
+    if(r && r.value) S = {...S, ...JSON.parse(r.value)};
+  }catch(e){ /* 首次使用，用預設值 */ }
+  if(!S.seeded){ await seedProgress(); }
+  else render();
+  if(SYNC_ON()){
+    flushPending();
+    if(!S.fullSynced){ fullSyncOnce(); }
+  } else setSyncBadge('');
+}
+
+// 首次連上雲端時，把既有資料一次補齊
+async function fullSyncOnce(){
+  const logs = Object.keys(S.logs).map(payloadLog).filter(Boolean);
+  const cups = Object.keys(S.cups).map(w=>payloadCup(+w)).filter(Boolean);
+  const dset = new Set([...Object.keys(S.wt), ...Object.keys(S.cal)]);
+  const daily = [...dset].map(payloadDaily).filter(Boolean);
+  await push('sync', {logs, cups, daily});
+  S.fullSynced = true;
+  await save();
+}
+async function save(){
+  try{ await window.storage.set(KEY, JSON.stringify(S)); }
+  catch(e){ toast('儲存失敗，請重試'); }
+}
+
+/* ============ 工具 ============ */
+const iso = d => d.toISOString().slice(0,10);
+const today = () => new Date();
+const todayKey = () => iso(today());
+
+function dayIndex(){ // 0=Mon
+  const d = today().getDay();
+  return d===0 ? 6 : d-1;
+}
+function weekIndex(){
+  const diff = Math.floor((today()-START)/86400000);
+  return Math.max(0, Math.min(12, Math.floor(diff/7)));
+}
+function roastOf(n){
+  let r = ROASTS[0];
+  for(const x of ROASTS) if(n>=x.min) r=x;
+  return r;
+}
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m; t.classList.add('on');
+  clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove('on'),2400);
+}
+function quoteOfDay(){
+  const seed = Math.floor((today()-START)/86400000);
+  return QUOTES[((seed%QUOTES.length)+QUOTES.length)%QUOTES.length];
+}
+
+/* ============ 週制連續判定 ============ */
+// 回傳某週(0-based)完成的訓練次數
+function weekDone(wi){
+  const it = S.items[wi]; if(!it) return 0;
+  return Object.keys(it).length;
+}
+// 某項目今天做了沒
+function itemDone(wi, id){ return !!(S.items[wi] && S.items[wi][id]); }
+// 本週剩餘天數（週日=0）
+function daysLeftInWeek(){ return 6 - dayIndex(); }
+function weekPassed(wi){ return weekDone(wi) >= WEEK_GOAL; }
+
+// 重算連續達標週數（只算已結束的週 + 本週若已達標）
+function recalcWeekStreak(){
+  const cur = weekIndex();
+  let streak = 0;
+  for(let i=0;i<=cur;i++){
+    const isCur = (i===cur);
+    if(weekPassed(i)) streak++;
+    else if(isCur) { /* 本週還沒達標，不歸零、也不加 */ }
+    else {
+      // 過去某週沒達標：可用金牌保住
+      if(S.shields>0 && streak>0){ S.shields--; }
+      else streak = 0;
+    }
+  }
+  S.wstreak = streak;
+  if(streak > S.wbest) S.wbest = streak;
+}
+
+/* ============ 訓練日誌表單 ============ */
+let LG = {kind:null, rpe:null, dur:null, cmp:null, sore:[], note:''};
+let lgQ = 1;
+
+function openLog(item){
+  LG = {item, kind:'full', rpe:null, dur:null, cmp:null, sore:[], note:''};
+  lgQ = 0;   // 0 = 先問完整還是最低標
+  buildLogUI();
+  document.getElementById('lgTitle').textContent = item.n;
+  showQ(0);
+  document.getElementById('logSheet').classList.add('on');
+}
+function closeLog(){ document.getElementById('logSheet').classList.remove('on'); }
+
+function buildLogUI(){
+  // 類型
+  const kl=document.getElementById('kindList'); kl.innerHTML='';
+  [{v:'full',l:'完整做完',d:'照這一項的內容練'},
+   {v:'min', l:'只做了 10 分鐘',d:'也算數，一樣勾起來'}].forEach(o=>{
+    const b=document.createElement('button'); b.className='opt-b';
+    b.innerHTML=`<b>${o.l}</b><span>${o.d}</span>`;
+    b.onclick=()=>{
+      LG.kind=o.v;
+      document.querySelectorAll('#kindList .opt-b').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); checkNext();
+    };
+    kl.appendChild(b);
+  });
+
+  // RPE
+  const rg=document.getElementById('rpeGrid'); rg.innerHTML='';
+  RPE_SCALE.forEach(r=>{
+    const b=document.createElement('button'); b.className='rpe-b'; b.textContent=r.v;
+    b.onclick=()=>{
+      LG.rpe=r.v;
+      document.querySelectorAll('.rpe-b').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');
+      document.getElementById('rpeLbl').textContent=r.l;
+      checkNext();
+    };
+    rg.appendChild(b);
+  });
+  document.getElementById('rpeLbl').textContent='選一個數字';
+
+  // 時長快選（依今天課表估）
+  const dq=document.getElementById('durQuick'); dq.innerHTML='';
+  const presets = LG.kind==='min' ? [10,15,20,30] : [30,45,60,90];
+  presets.forEach(m=>{
+    const b=document.createElement('button'); b.className='dur-b'; b.textContent=m+' 分';
+    b.onclick=()=>{
+      LG.dur=m;
+      document.querySelectorAll('.dur-b').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');
+      document.getElementById('durInput').value='';
+      checkNext();
+    };
+    dq.appendChild(b);
+  });
+  const di=document.getElementById('durInput'); di.value='';
+  di.oninput=()=>{
+    const v=parseInt(di.value);
+    if(v>0){ LG.dur=v; document.querySelectorAll('.dur-b').forEach(x=>x.classList.remove('sel')); }
+    else LG.dur=null;
+    checkNext();
+  };
+
+  // 完成度
+  const cl=document.getElementById('cmpList'); cl.innerHTML='';
+  COMPLETION.forEach(c=>{
+    const b=document.createElement('button'); b.className='opt-b';
+    b.innerHTML=`<b>${c.l}</b><span>${c.d}</span>`;
+    b.onclick=()=>{
+      LG.cmp=c.v;
+      document.querySelectorAll('#cmpList .opt-b').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); checkNext();
+    };
+    cl.appendChild(b);
+  });
+
+  // 痠痛
+  const sg=document.getElementById('soreGrid'); sg.innerHTML='';
+  SORE_PARTS.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='sore-b'+(s.v==='none'?' none':''); b.textContent=s.l;
+    b.onclick=()=>{
+      if(s.v==='none'){
+        LG.sore=['none'];
+        document.querySelectorAll('.sore-b').forEach(x=>x.classList.remove('sel'));
+        b.classList.add('sel');
+      }else{
+        LG.sore=LG.sore.filter(x=>x!=='none');
+        document.querySelector('.sore-b.none').classList.remove('sel');
+        if(LG.sore.includes(s.v)){ LG.sore=LG.sore.filter(x=>x!==s.v); b.classList.remove('sel'); }
+        else { LG.sore.push(s.v); b.classList.add('sel'); }
+      }
+      checkNext();
+    };
+    sg.appendChild(b);
+  });
+  document.getElementById('noteInput').value='';
+}
+
+function showQ(n){
+  lgQ=n;
+  document.querySelectorAll('.lgq').forEach(q=>q.classList.toggle('on', +q.dataset.q===n));
+  document.getElementById('lgStep').textContent=`${n+1} / 5`;
+  document.getElementById('lgBack').style.visibility = n===0?'hidden':'visible';
+  document.getElementById('lgNext').textContent = n===4?'完成打卡':'下一步';
+  checkNext();
+}
+function checkNext(){
+  const ok = lgQ===0 ? !!LG.kind
+           : lgQ===1 ? LG.rpe!==null
+           : lgQ===2 ? LG.dur!==null && LG.dur>0
+           : lgQ===3 ? LG.cmp!==null
+           : LG.sore.length>0;
+  document.getElementById('lgNext').disabled = !ok;
+}
+
+document.getElementById('lgBack').onclick=()=>{ if(lgQ>0) showQ(lgQ-1); };
+document.getElementById('lgNext').onclick=async()=>{
+  if(lgQ===0){ buildDurPresets(); showQ(1); return; }
+  if(lgQ<4){ showQ(lgQ+1); return; }
+  LG.note = document.getElementById('noteInput').value.trim();
+  closeLog();
+  await checkIn({...LG});
+};
+// 依 kind 重建時長快選
+function buildDurPresets(){
+  const dq=document.getElementById('durQuick'); dq.innerHTML='';
+  const presets = LG.kind==='min' ? [10,15,20,30] : [30,45,60,90];
+  presets.forEach(m=>{
+    const b=document.createElement('button'); b.className='dur-b'; b.textContent=m+' 分';
+    b.onclick=()=>{ LG.dur=m;
+      document.querySelectorAll('.dur-b').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); document.getElementById('durInput').value=''; checkNext(); };
+    dq.appendChild(b);
+  });
+}
+
+/* ============ 打卡 ============ */
+async function checkIn(log){
+  const k = todayKey();
+  const wi = weekIndex();
+  const it = log.item;
+  if(!S.items[wi]) S.items[wi] = {};
+  if(S.items[wi][it.id]) return;   // 已完成
+
+  const before = weekPassed(wi);
+  S.items[wi][it.id] = {date:k, kind:log.kind};
+  S.total++;
+
+  // 訓練日誌（以日期為鍵；同一天做兩項則加後綴）
+  let logKey = k;
+  if(S.logs[logKey]) logKey = k+'#'+it.id;
+  S.logs[logKey] = {
+    date:k, week:wi+1, item:it.n, kind:log.kind,
+    plan: it.n+'（'+it.d+'）',
+    rpe:log.rpe, dur:log.dur, cmp:log.cmp,
+    sore:log.sore, note:log.note,
+    nth: weekDone(wi)
+  };
+
+  recalcWeekStreak();
+  await checkBounty();
+  const after = weekPassed(wi);
+
+  if(!before && after){
+    if(S.shields < 2){ S.shields++; toast('本週達標！補充 1 張免死金牌'); }
+    else toast('本週達標！可以賣咖啡了');
+  } else {
+    const left = WEEK_GOAL - weekDone(wi);
+    if(left > 0) toast(`已記錄。本週再 ${left} 項就達標`);
+    else toast('已記錄。');
+  }
+  await save(); render();
+
+  const pl=payloadLog(logKey); if(pl) push('log', pl);
+  const pd=payloadDaily(k); if(pd) push('daily', pd);
+}
+
+/* ============ 體重 ============ */
+const SLOTS = {am:'早上', pm:'下班', night:'睡前'};
+async function logWeight(slot, v){
+  const k = todayKey();
+  if(!S.wt[k]) S.wt[k] = {};
+  S.wt[k][slot] = v;
+  await save(); renderWeight(); renderHistory();
+  const pd=payloadDaily(k); if(pd) push('daily', pd);
+  toast(`已記錄${SLOTS[slot]}體重 ${v.toFixed(1)} kg`);
+}
+// 取某日代表值：優先早上 → 睡前 → 下班
+function dayWeight(rec){
+  if(!rec) return null;
+  if(typeof rec === 'number') return rec; // 相容舊資料
+  return rec.am ?? rec.night ?? rec.pm ?? null;
+}
+
+/* ============ 咖啡店 ============ */
+// 某週能做出的品項（未達標回傳 null）
+function cupOf(wi){
+  const done = weekDone(wi);
+  if(done < WEEK_GOAL) return null;
+  if(DELOAD_WEEKS.includes(wi+1)) return SEASONAL;
+  const cap = Math.min(7, done);
+  return MENU[cap] || MENU[5];
+}
+// 某週售價（含連續加成，加成用「賣出當下」的連續週數）
+function priceOf(wi, streakAtSale){
+  const c = cupOf(wi); if(!c) return 0;
+  return Math.round(c.price * (1 + bonusRate(streakAtSale)));
+}
+// 賣出當週咖啡
+async function sellCup(wi){
+  if(S.cups[wi]) return;
+  const c = cupOf(wi); if(!c) return;
+  const amt = priceOf(wi, S.wstreak);
+  S.cups[wi] = {id:c.id, n:c.n, price:amt, rare:c.rare, done:weekDone(wi)};
+  S.wallet += amt;
+  await checkBounty();
+  await save(); render();
+  const pc=payloadCup(wi); if(pc) push('cup', pc);
+  toast(`賣出「${c.n}」· Aaron 又存了 ${amt} 元`);
+}
+// 里程碑獎金
+async function checkBounty(){
+  for(const b of BOUNTY){
+    if(S.wbest>=b.n && !S.claimed.includes(b.n)){
+      S.claimed.push(b.n); S.wallet += b.amt;
+      setTimeout(()=>toast(`「${b.t}」· Aaron 加碼 ${b.amt} 元`), 1200);
+    }
+  }
+}
+// 預估最終總額
+function projectedTotal(){
+  const cupsLeft = 41 - Object.keys(S.cups).length;
+  return S.wallet + cupsLeft*90 + BOUNTY.filter(b=>!S.claimed.includes(b.n)).reduce((a,b)=>a+b.amt,0);
+}
+
+/* ============ 卡路里 ============ */
+async function addCal(v){
+  const k=todayKey();
+  if(!S.cal[k]) S.cal[k]=[];
+  S.cal[k].push(v);
+  await save(); renderCal(); renderWeight();
+  const pd=payloadDaily(k); if(pd) push('daily', pd);
+}
+
+/* ============ 匯入既有進度（一次性） ============ */
+async function seedProgress(){
+  // 依實際完成次數，把項目標記為完成（挑前 N 項）
+  const fill = (wi, n, dates) => {
+    const wk=WEEKS[wi]; if(!wk) return;
+    S.items[wi] = S.items[wi] || {};
+    for(let i=0;i<n && i<wk.items.length;i++){
+      S.items[wi][wk.items[i].id] = {date: dates[i]||'', kind:'full'};
+    }
+  };
+  // 第 1 週 6 次（全部完成）
+  fill(0, 6, ['2026-06-23','2026-06-24','2026-06-26','2026-06-27','2026-06-28','2026-06-29']);
+  // 第 2 週 3 次 → 未達標
+  fill(1, 3, ['2026-06-30','2026-07-01','2026-07-04']);
+  // 第 3 週 2 次（進行中）
+  fill(2, 2, ['2026-07-08','2026-07-10']);
+
+  S.total = 11;
+
+  // 第 1 週 6 項全完成 → 拿鐵 $90
+  if(!S.cups[0]){ S.cups[0] = {id:'latte', n:'拿鐵', price:90, rare:'稀有', done:6}; S.wallet += 90; }
+
+  S.shields = 1;
+  S.seeded = true;
+  recalcWeekStreak();   // 第 2 週未達標 → 自動用掉金牌
+  await checkBounty();
+  await save();
+  render();
+}
+window.seedProgress = seedProgress;
+
+/* ============ 渲染 ============ */
+function renderCountdown(){
+  const t = new Date(todayKey()+'T00:00:00');
+  const days = Math.ceil((RACE - t)/86400000);
+  const total = Math.round((RACE - START)/86400000);
+  const gone = Math.max(0, Math.min(total, total - days));
+  const pct = Math.round(gone/total*100);
+
+  const el = document.getElementById('cdDays');
+  if(days > 0){ el.textContent = days; }
+  else if(days === 0){ el.textContent = '今天'; document.querySelector('.cd-label').textContent = '就是今天 · Challenge Taiwan 226'; }
+  else { el.textContent = '✓'; document.querySelector('.cd-label').textContent = '已完賽 · Challenge Taiwan 226'; }
+
+  document.getElementById('cdPct').textContent = pct+'% 已走完';
+  document.getElementById('cdFill').style.width = pct+'%';
+}
+
+function render(){
+  recalcWeekStreak();
+  const r = roastOf(S.wstreak);
+
+  document.getElementById('dateline').textContent =
+    today().toLocaleDateString('zh-TW',{month:'long',day:'numeric',weekday:'long'});
+
+  renderCountdown();
+
+  const wi = weekIndex();
+  const done = weekDone(wi);
+  const cup = cupOf(wi);
+  const sold = S.cups[wi];
+
+  // ---- 咖啡杯分層 ----
+  const STAGE = [
+    {name:'空杯',   sub:'Empty · 還沒開始'},
+    {name:'選好豆', sub:'Beans · 今天的豆子有了'},
+    {name:'磨好粉', sub:'Ground · 粉層準備好'},
+    {name:'萃取中', sub:'Extracting · 咖啡液流下'},
+    {name:'蒸好奶', sub:'Steamed · 奶泡綿密'},
+    {name:'完成',   sub:'Ready · 可以賣了'},
+  ];
+  const st = Math.min(5, done);
+  document.getElementById('roastName').textContent = sold ? '已售出' : STAGE[st].name;
+  document.getElementById('roastSub').textContent  = sold ? `${sold.n} · +${sold.price} 元` : STAGE[st].sub;
+
+  // 液面：y 越小越滿（杯內約 41→133）
+  const coffeeY = [150, 150, 150, 96, 78, 74][st];
+  const milkY   = [150, 150, 150, 150, 62, 56][st];
+  document.getElementById('lqCoffee').setAttribute('y', coffeeY);
+  document.getElementById('lqMilk').setAttribute('y', milkY);
+  document.getElementById('rawBeans').style.opacity = (st===1) ? 1 : 0;
+  document.getElementById('grounds').style.opacity  = (st===2) ? .85 : 0;
+  document.getElementById('art').style.opacity      = (st>=5) ? 1 : 0;
+  document.getElementById('steam').classList.toggle('on', st>=5);
+
+  // ---- 五步驟 ----
+  const sw=document.getElementById('steps'); sw.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='step'+(i<done?' on':'');
+    d.innerHTML=`<i>${i<done?'●':'○'}</i><b>${s.n}</b>`;
+    sw.appendChild(d);
+  });
+
+  // ---- 本週進度 ----
+  document.getElementById('wkDone').textContent = done;
+  document.getElementById('wkGoal').textContent = WEEK_GOAL;
+  document.getElementById('wkFill').style.width = Math.min(100,done/WEEK_GOAL*100)+'%';
+  const wkMsg=document.getElementById('wkMsg');
+  if(done>=WEEK_GOAL) wkMsg.textContent = done>=7?'全勤！精品手沖':'再多練可升級品項';
+  else wkMsg.textContent = `再 ${WEEK_GOAL-done} 次就能做成一杯`;
+
+  // ---- 這杯還煮得完嗎 ----
+  const ug=document.getElementById('urgent');
+  const daysLeft = 6 - dayIndex();   // 週日=6 → 0
+  const need = WEEK_GOAL - done;
+  ug.className='urgent';
+  if(sold || done>=WEEK_GOAL){ /* 已完成，不提示 */ }
+  else if(need===1){
+    ug.classList.add('on','close');
+    ug.innerHTML = daysLeft>0
+      ? `<b>差一步就完成了。</b>今天出門一次，這杯就煮好了。`
+      : `<b>差最後一次。</b>今天是這週最後一天。`;
+  }
+  else if(daysLeft<=3 && need>0 && need<=daysLeft+1){
+    ug.classList.add('on','warn');
+    ug.innerHTML = `還有 <b>${daysLeft===0?'今天':daysLeft+' 天'}</b>，這杯要在週日前煮完。<br>還差 ${need} 次。`;
+  }
+  else if(daysLeft<=1 && need>daysLeft+1){
+    ug.classList.add('on','warn');
+    ug.innerHTML = `這週剩 ${daysLeft===0?'今天':'1 天'}，還差 ${need} 次。<br>煮不完沒關係，下週一從頭再來。`;
+  }
+
+  // ---- 賣出 ----
+  const sb=document.getElementById('sellBox'); sb.innerHTML='';
+  if(sold){
+    sb.innerHTML=`<div class="sold"><b>${sold.n}</b><span>已售出 · +${sold.price} 元</span></div>`;
+  } else if(cup){
+    const amt = priceOf(wi, S.wstreak);
+    const b=document.createElement('button'); b.className='sell-btn';
+    b.textContent=`賣出「${cup.n}」 · +${amt} 元`;
+    b.onclick=()=>sellCup(wi);
+    sb.appendChild(b);
+  }
+
+  // ---- 帳本 ----
+  document.getElementById('wallet').textContent = S.wallet.toLocaleString();
+  document.getElementById('streakN').textContent = S.wstreak;
+  document.getElementById('bonusN').textContent = Math.round(bonusRate(S.wstreak)*100);
+  document.getElementById('projN').textContent = projectedTotal().toLocaleString();
+
+  document.getElementById('quoteTxt').textContent = quoteOfDay();
+
+  renderToday();
+  renderCal();
+  renderBeans();
+  renderPlan();
+  renderWeight();
+  renderHistory();
+  renderLogs();
+}
+
+function renderToday(){
+  const wi=weekIndex();
+  const wk=WEEKS[wi]; if(!wk) return;
+
+  // 階段一收尾提示
+  const nt=document.getElementById('phaseNotice');
+  const daysToEnd = Math.ceil((new Date(2026,8,20) - new Date(todayKey()+'T00:00:00'))/86400000);
+  if(wi>=12 && daysToEnd>=0){
+    nt.classList.add('on');
+    nt.innerHTML = `<b>階段一快結束了</b><p>還有 ${daysToEnd} 天（9/20）就完成 13 週。<br>記得請 Aaron 更新階段二的課表。</p>`;
+  } else if(wi>=13){
+    nt.classList.add('on');
+    nt.innerHTML = `<b>階段一已完成 ✓</b><p>13 週走完了。請 Aaron 更新階段二（2026.10 - 2027.01）的內容。</p>`;
+  } else nt.classList.remove('on');
+
+  const done = weekDone(wi);
+  document.getElementById('tDay').textContent = `完成 ${done} / 6 項`;
+  document.getElementById('tWeek').textContent = wk.label+' · '+wk.hrs;
+
+  const body=document.getElementById('tBody'); body.innerHTML='';
+  wk.items.forEach(it=>{
+    const rec = S.items[wi] && S.items[wi][it.id];
+    const el=document.createElement('div');
+    el.className='wk-item'+(rec?' done':'');
+    const when = rec ? (rec.date||'').slice(5).replace('-','/') : '';
+    el.innerHTML=`
+      <div class="wk-box">${rec?'✓':''}</div>
+      <div class="wk-ico">${ICONS[it.t]||'•'}</div>
+      <div class="wk-txt"><strong>${it.n}</strong><span>${it.d}</span></div>
+      ${when?`<div class="wk-when">${when}</div>`:''}`;
+    if(!rec) el.onclick=()=>openLog(it);
+    else el.onclick=()=>undoItem(wi,it);
+    body.appendChild(el);
+  });
+
+  if(done>=WEEK_GOAL && !S.cups[wi]){
+    const f=document.createElement('div'); f.className='wk-full';
+    f.textContent='已達標，可以賣咖啡了';
+    body.appendChild(f);
+  }
+}
+
+// 取消勾選（誤按時）
+async function undoItem(wi, it){
+  if(!confirm(`取消「${it.n}」的紀錄？`)) return;
+  const rec = S.items[wi][it.id];
+  if(rec && rec.date && S.logs[rec.date]) delete S.logs[rec.date];
+  delete S.items[wi][it.id];
+  S.total = Math.max(0, S.total-1);
+  recalcWeekStreak();
+  await save(); render();
+  toast('已取消');
+}
+
+function renderCal(){
+  const k=todayKey();
+  const list=S.cal[k]||[];
+  const sum=list.reduce((a,b)=>a+b,0);
+  document.getElementById('calNow').textContent=sum;
+  document.getElementById('calGoal').textContent=S.goal;
+  const left=S.goal-sum;
+  document.getElementById('calLeft').textContent = left>=0 ? `還剩 ${left}` : `超出 ${-left}`;
+  document.getElementById('cupFill').style.width=Math.min(100,sum/S.goal*100)+'%';
+  const log=document.getElementById('calLog'); log.innerHTML='';
+  list.forEach((v,i)=>{
+    const c=document.createElement('span'); c.className='chip'; c.textContent='+'+v;
+    c.onclick=async()=>{ S.cal[k].splice(i,1); await save(); renderCal(); };
+    log.appendChild(c);
+  });
+}
+
+function renderBeans(){
+  const wi=weekIndex();
+  // 菜單收藏
+  const owned = Object.values(S.cups);
+  const cnt = id => owned.filter(c=>c.id===id).length;
+  const all = [MENU[5], MENU[6], MENU[7], SEASONAL];
+  const mg=document.getElementById('menuGrid'); mg.innerHTML='';
+  all.forEach(m=>{
+    const c=cnt(m.id);
+    const d=document.createElement('div');
+    d.className='mcard'+(c>0?' owned':' locked')+(m.rare==='傳說'?' legend':'');
+    d.innerHTML=`${c>0?`<div class="cnt">×${c}</div>`:''}
+      <b style="color:${c>0?m.color:'inherit'}">${m.n}</b>
+      <div class="rare">${m.rare}</div>
+      <div class="pz">$${m.price}</div>`;
+    mg.appendChild(d);
+  });
+
+  // 本週零件格（六個項目）
+  const g=document.getElementById('beansGrid'); g.innerHTML='';
+  g.style.gridTemplateColumns='repeat(6,1fr)';
+  const wkNow=WEEKS[wi];
+  if(wkNow) wkNow.items.forEach(it=>{
+    const c=document.createElement('div'); c.className='bcell';
+    if(itemDone(wi,it.id)){ c.classList.add('got'); c.textContent='●'; }
+    else c.textContent=ICONS[it.t]||'○';
+    g.appendChild(c);
+  });
+
+  document.getElementById('totalBeans').textContent=owned.length;
+  document.getElementById('totalDays').textContent=`最長連續 ${S.wbest} 週`;
+  document.getElementById('cupsFill').style.width = (owned.length/41*100)+'%';
+  const elapsed = Math.min(41, wi+1);
+  const note=document.getElementById('cupsNote');
+  if(owned.length===0) note.textContent='第一杯還沒煮成。這週開始。';
+  else note.textContent=`已經過 ${elapsed} 週，煮成 ${owned.length} 杯。基金累積 ${S.wallet.toLocaleString()} 元。`;
+
+  // 里程碑獎金
+  const bl=document.getElementById('bountyList'); bl.innerHTML='';
+  BOUNTY.forEach(b=>{
+    const got=S.claimed.includes(b.n);
+    const r=document.createElement('div'); r.className='ms-row bt-row'+(got?' got hit':'');
+    r.innerHTML=`<div class="ms-dot"></div>
+      <div class="ms-txt"><strong>${b.t}</strong><span>連續 ${b.n} 週達標</span></div>
+      <div class="bt-amt">${got?'✓ +':'+'}${b.amt}</div>`;
+    bl.appendChild(r);
+  });
+
+}
+
+function renderPlan(){
+  const wi=weekIndex();
+  const pl=document.getElementById('planList'); pl.innerHTML='';
+  WEEKS.forEach((w,i)=>{
+    const r=document.createElement('div'); r.className='ms-row'+(i<wi?' hit':'');
+    const cur = i===wi ? ' ← 現在' : '';
+    r.innerHTML=`<div class="ms-dot"></div>
+      <div class="ms-txt"><strong>${w.label}${cur}</strong><span>${w.note}</span></div>
+      <div class="ms-n">${w.hrs}</div>`;
+    pl.appendChild(r);
+  });
+}
+
+function renderWeight(){
+  const k = todayKey();
+  const todayRec = S.wt[k] || {};
+
+  // 三格顯示
+  const ws = document.getElementById('wtSlots'); ws.innerHTML='';
+  ['am','pm','night'].forEach(s=>{
+    const v = (typeof todayRec==='number' && s==='am') ? todayRec : todayRec[s];
+    const d = document.createElement('div');
+    d.className = 'wslot' + (v?' has':'');
+    d.innerHTML = `<span>${SLOTS[s]}</span><b class="${v?'':'empty'}">${v?v.toFixed(1):'—'}</b>`;
+    ws.appendChild(d);
+  });
+
+  // 主數字：今天早上優先，否則最近一筆
+  const keys = Object.keys(S.wt).sort();
+  const el = document.getElementById('wtNow');
+  const dl = document.getElementById('wtDelta');
+  const todayAm = dayWeight(todayRec);
+  const lastKey = keys[keys.length-1];
+  const cur = todayAm ?? (lastKey ? dayWeight(S.wt[lastKey]) : null);
+
+  if(cur===null){ el.textContent='—'; dl.textContent='尚無紀錄'; }
+  else{
+    el.textContent = cur.toFixed(1);
+    const first = dayWeight(S.wt[keys[0]]);
+    if(keys.length<2 || first===null) dl.textContent='第一筆紀錄';
+    else{
+      const diff = cur - first;
+      dl.textContent = diff<0 ? `較起始 ↓ ${Math.abs(diff).toFixed(1)} kg`
+                     : diff>0 ? `較起始 ↑ ${diff.toFixed(1)} kg` : '與起始相同';
+    }
+  }
+
+  // 趨勢圖：每天早上那筆（最近 14 天）
+  const sp=document.getElementById('wtSpark'); sp.innerHTML='';
+  const series = keys.map(kk=>dayWeight(S.wt[kk])).filter(v=>v!==null).slice(-14);
+  if(series.length>1){
+    const lo=Math.min(...series), hi=Math.max(...series), rng=Math.max(.6,hi-lo);
+    series.forEach((v,i)=>{
+      const b=document.createElement('i');
+      b.style.height = (12 + (v-lo)/rng*30) + 'px';
+      if(i===series.length-1) b.className='last';
+      sp.appendChild(b);
+    });
+  }
+
+  // 熱量警示
+  const w=document.getElementById('calWarn');
+  const sum=(S.cal[k]||[]).reduce((a,b)=>a+b,0);
+  if(sum>0 && sum < CAL_FLOOR){
+    w.classList.add('on');
+    w.innerHTML = `今天只吃了 <b>${sum}</b> kcal。基礎代謝約 1264 kcal，訓練日低於 ${CAL_FLOOR} 會練不動、恢復不了。<br>減重靠的是規律，不是餓。`;
+  } else w.classList.remove('on');
+}
+
+function renderHistory(){
+  const cur = weekIndex();
+  const el = document.getElementById('histList'); el.innerHTML='';
+  for(let i=cur;i>=0;i--){
+    const done = weekDone(i);
+    const pass = done>=WEEK_GOAL;
+    const wk = WEEKS[i] || {label:`第 ${i+1} 週`};
+    const r=document.createElement('div'); r.className='ms-row'+(pass?' hit':'');
+    const tag = i===cur ? '（本週）' : '';
+    r.innerHTML=`<div class="ms-dot"></div>
+      <div class="ms-txt"><strong>${wk.label}${tag}</strong><span>${pass?'達標':'未達標'} · 完成 ${done} 次</span></div>
+      <div class="ms-n">${done}/${WEEK_GOAL}</div>`;
+    el.appendChild(r);
+  }
+
+  const wl=document.getElementById('wtLog'); wl.innerHTML='';
+  const keys=Object.keys(S.wt).sort().reverse().slice(0,20);
+  if(!keys.length){ wl.innerHTML='<div class="wt-empty">還沒有體重紀錄</div>'; return; }
+  keys.forEach((k,idx)=>{
+    const rec = S.wt[k];
+    const cur = dayWeight(rec);
+    const prev = keys[idx+1] ? dayWeight(S.wt[keys[idx+1]]) : null;
+    const d = (cur!==null && prev!==null) ? cur-prev : null;
+    const sign = d===null?'':(d<0?`↓${Math.abs(d).toFixed(1)}`:d>0?`↑${d.toFixed(1)}`:'—');
+    const parts = (typeof rec==='object')
+      ? ['am','pm','night'].filter(s=>rec[s]).map(s=>`${SLOTS[s]} ${rec[s].toFixed(1)}`).join(' · ')
+      : `早上 ${rec.toFixed(1)}`;
+    const r=document.createElement('div'); r.className='wt-row';
+    r.innerHTML=`<span>${k}<br><span style="font-size:10px;opacity:.7">${parts}</span></span>`
+              + `<b>${cur!==null?cur.toFixed(1):'—'} kg <span>${sign}</span></b>`;
+    wl.appendChild(r);
+  });
+}
+
+function rpeColor(v){
+  if(v<=3) return '#8A9A5B';
+  if(v<=5) return '#C08552';
+  if(v<=7) return '#D8572A';
+  return '#A83232';
+}
+function renderLogs(){
+  const el=document.getElementById('logList'); el.innerHTML='';
+  const keys=Object.keys(S.logs).sort().reverse().slice(0,30);
+  if(!keys.length){ el.innerHTML='<div class="wt-empty">還沒有訓練日誌</div>'; return; }
+  const cmpTxt={full:'照課表',short:'有縮水',extra:'有加量'};
+  const soreTxt=Object.fromEntries(SORE_PARTS.map(s=>[s.v,s.l]));
+  keys.forEach(k=>{
+    const g=S.logs[k];
+    const sore = g.sore.includes('none') ? '無痠痛'
+      : g.sore.map(s=>soreTxt[s]||s).join('、');
+    const c=document.createElement('div'); c.className='lg-card';
+    c.innerHTML=`
+      <div class="lg-card-h">
+        <b>${g.item||('第 '+g.nth+' 次')}</b>
+        <span>第 ${g.week} 週 · ${g.date}</span>
+      </div>
+      <div class="lg-meta">
+        <i>RPE <span class="lg-rpe" style="background:${rpeColor(g.rpe)};color:#1A1210">${g.rpe}</span></i>
+        <i>${g.dur} 分鐘</i>
+        <i>${cmpTxt[g.cmp]||g.cmp}</i>
+        <i>${g.kind==='min'?'最低標':'完整'}</i>
+      </div>
+      <div class="lg-meta" style="margin-top:6px">
+        <i style="color:${g.sore.includes('none')?'var(--green)':'var(--ember)'}">${sore}</i>
+      </div>
+      ${g.note?`<div class="lg-note">「${g.note}」</div>`:''}`;
+    el.appendChild(c);
+  });
+}
+
+function exportCSV(){
+  const soreTxt=Object.fromEntries(SORE_PARTS.map(s=>[s.v,s.l]));
+  const rows=[['日期','週次','星期','項目','課表內容','打卡類型','RPE','實際分鐘','完成度','痠痛部位','備註','當日體重(早)','當日卡路里']];
+  Object.keys(S.logs).sort().forEach(k=>{
+    const g=S.logs[k];
+    const wt=S.wt[k]; const wtAm = wt ? (typeof wt==='number'?wt:(wt.am??'')) : '';
+    const cal=(S.cal[k]||[]).reduce((a,b)=>a+b,0);
+    const wd=['日','一','二','三','四','五','六'][new Date(g.date+'T00:00:00').getDay()];
+    rows.push([
+      g.date, g.week, wd, g.item||'',
+      (g.plan||'').replace(/,/g,'；'),
+      g.kind==='min'?'最低標':'完整',
+      g.rpe, g.dur,
+      {full:'照課表',short:'有縮水',extra:'有加量'}[g.cmp]||g.cmp,
+      g.sore.map(s=>soreTxt[s]||s).join('；'),
+      (g.note||'').replace(/,/g,'；'),
+      wtAm, cal||''
+    ]);
+  });
+  const csv='\ufeff'+rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`ritas_coffee_log_${todayKey()}.csv`;
+  a.click();
+  toast('已匯出，傳給 Aaron');
+}
+
+/* ============ 事件 ============ */
+document.querySelectorAll('nav button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('v-'+b.dataset.v).classList.add('on');
+  };
+});
+document.getElementById('calAdd').onclick=async()=>{
+  const el=document.getElementById('calInput');
+  const v=parseInt(el.value);
+  if(!v||v<=0){ toast('請輸入數字'); return; }
+  await addCal(v); el.value='';
+};
+document.getElementById('calInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') document.getElementById('calAdd').click();
+});
+document.getElementById('exportBtn').onclick=exportCSV;
+document.getElementById('wtAdd').onclick=async()=>{
+  const el=document.getElementById('wtInput');
+  const slot=document.getElementById('wtSlot').value;
+  const v=parseFloat(el.value);
+  if(!v||v<30||v>200){ toast('請輸入合理體重'); return; }
+  await logWeight(slot, v); el.value='';
+};
+document.getElementById('wtInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') document.getElementById('wtAdd').click();
+});
+document.getElementById('goalSet').onclick=async()=>{
+  const el=document.getElementById('goalInput');
+  const v=parseInt(el.value);
+  if(!v||v<1500){ toast('低於 1500 kcal 練不動，也恢復不了'); return; }
+  S.goal=v; await save(); renderCal(); el.value=''; toast('目標已更新');
+};
+
+load();
+</script>
+</body>
+</html>
