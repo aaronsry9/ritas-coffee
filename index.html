@@ -62,6 +62,22 @@ h1 em{font-style:italic;font-weight:400;color:var(--light);display:block;font-si
   margin-top:10px;letter-spacing:.1em;
 }
 
+/* reload */
+.reload-btn{
+  position:absolute;top:26px;right:20px;
+  width:38px;height:38px;border:1px solid var(--line);border-radius:2px;
+  background:rgba(255,255,255,.03);color:var(--dim);font-size:17px;cursor:pointer;
+  display:grid;place-items:center;transition:transform .4s;
+  z-index:5;
+}
+.reload-btn:active{transform:rotate(180deg);color:var(--crema)}
+header{position:relative}
+.ver{
+  text-align:center;padding:20px 0 8px;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;
+  color:var(--dim);opacity:.5;
+}
+
 /* sync badge */
 .sync-badge{
   display:none;margin-left:8px;padding:2px 6px;border-radius:2px;
@@ -549,6 +565,17 @@ nav button.on i{transform:translateY(-2px)}
 .view.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
+/* pull to refresh (bottom overscroll) */
+.pull-hint{
+  position:fixed;left:50%;bottom:86px;transform:translate(-50%,16px);
+  background:rgba(26,18,16,.95);border:1px solid var(--line);
+  color:var(--dim);padding:10px 18px;border-radius:2px;
+  font-size:12px;font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:55;
+}
+.pull-hint.show{opacity:1;transform:translate(-50%,0)}
+.pull-hint.ready{color:var(--gold);border-color:rgba(201,162,39,.5)}
+
 /* toast */
 #toast{
   position:fixed;left:50%;bottom:104px;transform:translate(-50%,20px);
@@ -566,6 +593,7 @@ nav button.on i{transform:translateY(-2px)}
 
 <div class="wrap">
   <header>
+    <button class="reload-btn" id="reloadBtn" title="重新整理">↻</button>
     <div class="eyebrow">Est. 2026 · Challenge Taiwan 226 <span class="sync-badge" id="syncBadge"></span></div>
     <h1>Rita's<em>Coffee</em></h1>
     <div class="date" id="dateline"></div>
@@ -755,6 +783,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
+  <div class="ver">Rita's Coffee · v2.2</div>
 </div>
 
 <nav>
@@ -810,6 +839,7 @@ nav button.on i{transform:translateY(-2px)}
   </div>
 </div>
 
+<div id="pullHint" class="pull-hint">↻ 放開即可重新整理</div>
 <div id="toast"></div>
 
 <script>
@@ -1053,7 +1083,7 @@ async function push(type, payload){
     S.pending = S.pending || [];
     S.pending.push({type, payload});
     setSyncBadge('wait');
-    try{ await window.storage.set(KEY, JSON.stringify(S)); }catch(_){}
+    try{ await store.set(KEY, JSON.stringify(S)); }catch(_){}
   }
 }
 
@@ -1100,12 +1130,28 @@ function payloadDaily(k){
 
 /* ============ 狀態 ============ */
 const KEY = 'ct226coffee';
-let S = {wstreak:0, wbest:0, total:0, shields:1, days:{}, goal:1750, cal:{}, wt:{}, cups:{}, wallet:0, claimed:[], logs:{}, seeded:false, pending:[], items:{}};
+let S = {wstreak:0, wbest:0, total:0, shields:1, days:{}, goal:1750, cal:{}, wt:{}, cups:{}, wallet:0, claimed:[], logs:{}, seeded:false, pending:[], items:{}, shieldedWeeks:[]};
+
+// 儲存層：GitHub Pages 用 localStorage；Claude Artifacts 用 window.storage
+const store = {
+  async get(k){
+    if(typeof window!=='undefined' && window.storage && window.storage.get){
+      try{ const r=await window.storage.get(k); return r&&r.value?r.value:null; }catch(e){ return null; }
+    }
+    try{ return localStorage.getItem(k); }catch(e){ return null; }
+  },
+  async set(k,v){
+    if(typeof window!=='undefined' && window.storage && window.storage.set){
+      try{ await window.storage.set(k,v); return true; }catch(e){ /* fallthrough */ }
+    }
+    try{ localStorage.setItem(k,v); return true; }catch(e){ return false; }
+  }
+};
 
 async function load(){
   try{
-    const r = await window.storage.get(KEY);
-    if(r && r.value) S = {...S, ...JSON.parse(r.value)};
+    const v = await store.get(KEY);
+    if(v) S = {...S, ...JSON.parse(v)};
   }catch(e){ /* 首次使用，用預設值 */ }
   if(!S.seeded){ await seedProgress(); }
   else render();
@@ -1126,8 +1172,8 @@ async function fullSyncOnce(){
   await save();
 }
 async function save(){
-  try{ await window.storage.set(KEY, JSON.stringify(S)); }
-  catch(e){ toast('儲存失敗，請重試'); }
+  const ok = await store.set(KEY, JSON.stringify(S));
+  if(!ok) toast('儲存失敗，請重試');
 }
 
 /* ============ 工具 ============ */
@@ -1172,15 +1218,21 @@ function weekPassed(wi){ return weekDone(wi) >= WEEK_GOAL; }
 
 // 重算連續達標週數（只算已結束的週 + 本週若已達標）
 function recalcWeekStreak(){
+  S.shieldedWeeks = S.shieldedWeeks || [];
   const cur = weekIndex();
   let streak = 0;
   for(let i=0;i<=cur;i++){
     const isCur = (i===cur);
     if(weekPassed(i)) streak++;
     else if(isCur) { /* 本週還沒達標，不歸零、也不加 */ }
+    else if(S.shieldedWeeks.includes(i)) { /* 這週已用過金牌，連續保住 */ }
     else {
-      // 過去某週沒達標：可用金牌保住
-      if(S.shields>0 && streak>0){ S.shields--; }
+      // 過去某週沒達標：可用金牌保住（只扣一次，記下來）
+      if(S.shields>0 && streak>0){
+        S.shields--;
+        S.shieldedWeeks.push(i);
+        toast('用掉 1 張免死金牌，連續保住了');
+      }
       else streak = 0;
     }
   }
@@ -1868,6 +1920,48 @@ document.getElementById('calAdd').onclick=async()=>{
 document.getElementById('calInput').addEventListener('keydown',e=>{
   if(e.key==='Enter') document.getElementById('calAdd').click();
 });
+/* 底部上拉重新整理 */
+(function(){
+  let startY=null, pulled=0;
+  const THRESHOLD=80;
+  const hint=document.getElementById('pullHint');
+  const atBottom=()=> (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4;
+
+  document.addEventListener('touchstart', e=>{
+    if(atBottom()){ startY=e.touches[0].clientY; pulled=0; }
+    else startY=null;
+  }, {passive:true});
+
+  document.addEventListener('touchmove', e=>{
+    if(startY===null || !atBottom()) return;
+    pulled = startY - e.touches[0].clientY;   // 往上拉為正
+    if(pulled > 12){
+      hint.classList.add('show');
+      hint.classList.toggle('ready', pulled >= THRESHOLD);
+      hint.textContent = pulled >= THRESHOLD ? '↻ 放開即可重新整理' : '↑ 繼續上拉';
+    } else {
+      hint.classList.remove('show','ready');
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchend', async ()=>{
+    const go = startY!==null && pulled >= THRESHOLD;
+    hint.classList.remove('show','ready');
+    startY=null;
+    if(go){
+      await save();
+      toast('重新載入中…');
+      setTimeout(()=>location.reload(), 300);
+    }
+    pulled=0;
+  }, {passive:true});
+})();
+
+document.getElementById('reloadBtn').onclick=async()=>{
+  await save();                       // 先確保本地資料寫入
+  toast('重新載入中…');
+  setTimeout(()=>{ location.reload(); }, 350);
+};
 document.getElementById('exportBtn').onclick=exportCSV;
 document.getElementById('wtAdd').onclick=async()=>{
   const el=document.getElementById('wtInput');
