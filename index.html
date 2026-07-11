@@ -779,7 +779,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
-  <div class="ver">Rita's Coffee · v3.0 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
+  <div class="ver">Rita's Coffee · v3.1 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
 </div>
 
 <nav>
@@ -1156,6 +1156,27 @@ async function load(){
     if(g && /^\d+$/.test(String(g.item||''))){ delete S.logs[k]; cleaned=true; }
   });
   if(cleaned) await save();
+
+  // 一次性修正 v3.1：第 2 週實際完成 5 次（原誤記 3 次）
+  if(S.seeded && !S.fixW2){
+    const wk2 = WEEKS[1];
+    S.items[1] = S.items[1] || {};
+    const d2 = ['2026-06-30','2026-07-01','2026-07-02','2026-07-04','2026-07-05'];
+    for(let i=0;i<5;i++){
+      const id = wk2.items[i].id;
+      if(!S.items[1][id]) S.items[1][id] = {date:d2[i], kind:'full'};
+    }
+    // 還回誤扣的金牌：第 2 週不再需要金牌保護
+    S.shieldedWeeks = (S.shieldedWeeks||[]).filter(w=>w!==1);
+    S.shields = 2;   // W1、W2 各補一張（上限 2）
+    // 賣出第 2 週的咖啡（5 次 → 美式）
+    if(!S.cups[1]){ S.cups[1] = {id:'americano', n:'美式咖啡', price:60, rare:'普通', done:5}; S.wallet += 60; }
+    S.total = Object.values(S.items).reduce((a,w)=>a+Object.keys(w).length,0);
+    S.fixW2 = true;
+    recalcWeekStreak();
+    await checkBounty();   // 連續 2 週 → 里程碑 +100
+    await save();
+  }
 
   if(!S.seeded){ await seedProgress(); }
   else render();
