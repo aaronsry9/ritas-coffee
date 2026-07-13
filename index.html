@@ -779,7 +779,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
-  <div class="ver">Rita's Coffee · v3.1 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
+  <div class="ver">Rita's Coffee · v3.2 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
 </div>
 
 <nav>
@@ -1202,7 +1202,10 @@ async function save(){
 }
 
 /* ============ 工具 ============ */
-const iso = d => d.toISOString().slice(0,10);
+const iso = d => {
+  const y=d.getFullYear(), m=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+  return y+'-'+m+'-'+dd;
+};
 const today = () => new Date();
 const todayKey = () => iso(today());
 
@@ -2063,7 +2066,18 @@ document.getElementById('calInput').addEventListener('keydown',e=>{
 document.getElementById('reloadBtn').onclick=async()=>{
   await save();                       // 先確保本地資料寫入
   toast('重新載入中…');
-  setTimeout(()=>{ location.reload(); }, 350);
+  setTimeout(()=>{ location.re// 從背景回來或跨日時，自動更新畫面
+let lastDay = null;
+function autoRefresh(){
+  const k = todayKey();
+  if(lastDay && k !== lastDay){ render(); }
+  lastDay = k;
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) autoRefresh(); });
+window.addEventListener('focus', autoRefresh);
+setInterval(autoRefresh, 60000);   // 每分鐘檢查一次跨日
+
+load().then(()=>{ lastDay = todayKey(); }); }, 350);
 };
 document.getElementById('pullBtn').onclick=pullFromCloud;
 document.getElementById('wtAdd').onclick=async()=>{
@@ -2083,7 +2097,18 @@ document.getElementById('goalSet').onclick=async()=>{
   S.goal=v; await save(); renderCal(); el.value=''; toast('目標已更新');
 };
 
-load();
+// 從背景回來或跨日時，自動更新畫面
+let lastDay = null;
+function autoRefresh(){
+  const k = todayKey();
+  if(lastDay && k !== lastDay){ render(); }
+  lastDay = k;
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) autoRefresh(); });
+window.addEventListener('focus', autoRefresh);
+setInterval(autoRefresh, 60000);   // 每分鐘檢查一次跨日
+
+load().then(()=>{ lastDay = todayKey(); });
 </script>
 </body>
 </html>
