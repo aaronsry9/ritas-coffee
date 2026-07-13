@@ -779,7 +779,7 @@ nav button.on i{transform:translateY(-2px)}
     <div class="ms" id="planList"></div>
     <p class="hint" style="margin-top:14px">2026.06.23 → 2026.09.20<br>目標不是練強，是證明你能連續不斷。</p>
   </section>
-  <div class="ver">Rita's Coffee · v3.4 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
+  <div class="ver">Rita's Coffee · v3.6 　<button class="ver-reload" id="reloadBtn">↻ 重新整理</button></div>
 </div>
 
 <nav>
@@ -840,7 +840,7 @@ nav button.on i{transform:translateY(-2px)}
 
 <script>
 /* ============ 資料 ============ */
-const START = new Date(2026,5,23); // 2026/06/23
+const START = new Date(2026,5,22); // 6/22 週一 // 2026/06/23
 const RACE  = new Date(2027,3,23); // 2027/04/23 Challenge Taiwan 226
 
 const ROASTS = [
@@ -1155,7 +1155,21 @@ async function load(){
     const g=S.logs[k];
     if(g && /^\d+$/.test(String(g.item||''))){ delete S.logs[k]; cleaned=true; }
   });
+  // v3.5：清除重複日誌（同日期+同項目只留一筆）
+  const seenLog={};
+  Object.keys(S.logs).sort().forEach(k=>{
+    const g=S.logs[k]; if(!g) return;
+    const sig=g.date+'|'+g.item;
+    if(seenLog[sig]){ delete S.logs[k]; cleaned=true; }
+    else seenLog[sig]=true;
+  });
   if(cleaned) await save();
+
+  // v3.6：開賽日改為 6/22，強制用新基準重新歸位一次
+  if(S.seeded && S.startBase !== '2026-06-22'){
+    S.fixWeekFiling = false;
+    S.startBase = '2026-06-22';
+  }
 
   // 一次性修復 v3.3：依日期把放錯週的項目/日誌歸位
   if(S.seeded && !S.fixWeekFiling){
@@ -1543,7 +1557,7 @@ async function seedProgress(){
     }
   };
   // 第 1 週 6 次（全部完成）
-  fill(0, 6, ['2026-06-23','2026-06-24','2026-06-26','2026-06-27','2026-06-28','2026-06-29']);
+  fill(0, 6, ['2026-06-22','2026-06-23','2026-06-24','2026-06-26','2026-06-27','2026-06-28']);
   // 第 2 週 5 次 → 達標
   fill(1, 5, ['2026-06-30','2026-07-01','2026-07-02','2026-07-04','2026-07-05']);
   // 第 3 週 2 次（進行中）
@@ -1552,8 +1566,8 @@ async function seedProgress(){
   S.total = 13;
 
   // 第 1 週 6 項 → 拿鐵 $90；第 2 週 5 項 → 美式 $60
-  if(!S.cups[0]){ S.cups[0] = {id:'latte', n:'拿鐵', price:90, rare:'稀有', done:6}; S.wallet += 90; }
-  if(!S.cups[1]){ S.cups[1] = {id:'americano', n:'美式咖啡', price:60, rare:'普通', done:5}; S.wallet += 60; }
+  if(!S.cups[0]){ S.cups[0] = {id:'americano', n:'美式咖啡', price:60, rare:'普通', done:5}; S.wallet += 60; }
+  if(!S.cups[1]){ S.cups[1] = {id:'latte', n:'拿鐵', price:90, rare:'稀有', done:6}; S.wallet += 90; }
 
   S.shields = 2;
   S.seeded = true;
